@@ -15,10 +15,6 @@
         "category": "Error",
         "code": 1006
     },
-    "Trailing comma not allowed.": {
-        "category": "Error",
-        "code": 1009
-    },
     "'*/' expected.": {
         "category": "Error",
         "code": 1010

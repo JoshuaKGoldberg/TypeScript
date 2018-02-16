@@ -20348,12 +20348,6 @@ namespace ts {
         }
 
         function checkTupleType(node: TupleTypeNode) {
-            // Grammar checking
-            const hasErrorFromDisallowedTrailingComma = checkGrammarForDisallowedTrailingComma(node.elementTypes);
-            if (!hasErrorFromDisallowedTrailingComma && node.elementTypes.length === 0) {
-                grammarErrorOnNode(node, Diagnostics.A_tuple_type_element_list_cannot_be_empty);
-            }
-
             forEach(node.elementTypes, checkSourceElement);
         }
 
@@ -26069,13 +26063,6 @@ namespace ts {
             return grammarErrorOnNode(asyncModifier, Diagnostics._0_modifier_cannot_be_used_here, "async");
         }
 
-        function checkGrammarForDisallowedTrailingComma(list: NodeArray<Node>): boolean {
-            if (list && list.hasTrailingComma) {
-                const start = list.end - ",".length;
-                const end = list.end;
-                return grammarErrorAtPos(list[0], start, end - start, Diagnostics.Trailing_comma_not_allowed);
-            }
-        }
 
         function checkGrammarTypeParameterList(typeParameters: NodeArray<TypeParameterDeclaration>, file: SourceFile): boolean {
             if (typeParameters && typeParameters.length === 0) {
@@ -26207,8 +26194,7 @@ namespace ts {
         }
 
         function checkGrammarTypeArguments(node: Node, typeArguments: NodeArray<TypeNode>): boolean {
-            return checkGrammarForDisallowedTrailingComma(typeArguments) ||
-                checkGrammarForAtLeastOneTypeArgument(node, typeArguments);
+            return checkGrammarForAtLeastOneTypeArgument(node, typeArguments);
         }
 
         function checkGrammarForOmittedArgument(args: NodeArray<Expression>): boolean {
@@ -26227,9 +26213,6 @@ namespace ts {
 
         function checkGrammarHeritageClause(node: HeritageClause): boolean {
             const types = node.types;
-            if (checkGrammarForDisallowedTrailingComma(types)) {
-                return true;
-            }
             if (types && types.length === 0) {
                 const listType = tokenToString(node.token);
                 return grammarErrorAtPos(node, types.pos, 0, Diagnostics._0_list_cannot_be_empty, listType);
@@ -26818,9 +26801,6 @@ namespace ts {
 
         function checkGrammarVariableDeclarationList(declarationList: VariableDeclarationList): boolean {
             const declarations = declarationList.declarations;
-            if (checkGrammarForDisallowedTrailingComma(declarationList.declarations)) {
-                return true;
-            }
 
             if (!declarationList.declarations.length) {
                 return grammarErrorAtPos(declarationList, declarations.pos, declarations.end - declarations.pos, Diagnostics.Variable_declaration_list_cannot_be_empty);
