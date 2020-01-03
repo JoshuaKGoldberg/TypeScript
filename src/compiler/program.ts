@@ -1,6 +1,4 @@
 namespace ts {
-    const ignoreDiagnosticCommentRegEx = /(^\s*$)|(^\s*\/\/\/?\s*(@ts-ignore)?)/;
-
     export function findConfigFile(searchPath: string, fileExists: (fileName: string) => boolean, configName = "tsconfig.json"): string | undefined {
         return forEachAncestorDirectory(searchPath, ancestor => {
             const fileName = combinePaths(ancestor, configName);
@@ -1650,17 +1648,7 @@ namespace ts {
             const fileProcessingDiagnosticsInFile = fileProcessingDiagnostics.getDiagnostics(sourceFile.fileName);
             const programDiagnosticsInFile = programDiagnostics.getDiagnostics(sourceFile.fileName);
 
-            let diagnostics: Diagnostic[] | undefined;
-            for (const diags of [fileProcessingDiagnosticsInFile, programDiagnosticsInFile]) {
-                if (diags) {
-                    for (const diag of diags) {
-                        if (shouldReportDiagnostic(diag)) {
-                            diagnostics = append(diagnostics, diag);
-                        }
-                    }
-                }
-            }
-            return diagnostics || emptyArray;
+            return getMergedDiagnostics(sourceFile, fileProcessingDiagnosticsInFile, programDiagnosticsInFile);
         }
 
         function getDeclarationDiagnostics(sourceFile?: SourceFile, cancellationToken?: CancellationToken): readonly DiagnosticWithLocation[] {
@@ -1738,18 +1726,27 @@ namespace ts {
                 const bindDiagnostics: readonly Diagnostic[] = includeBindAndCheckDiagnostics ? sourceFile.bindDiagnostics : emptyArray;
                 const checkDiagnostics = includeBindAndCheckDiagnostics ? typeChecker.getDiagnostics(sourceFile, cancellationToken) : emptyArray;
 
-                let diagnostics: Diagnostic[] | undefined;
-                for (const diags of [bindDiagnostics, checkDiagnostics, isCheckJs ? sourceFile.jsDocDiagnostics : undefined]) {
-                    if (diags) {
-                        for (const diag of diags) {
-                            if (shouldReportDiagnostic(diag)) {
-                                diagnostics = append(diagnostics, diag);
-                            }
+                return getMergedDiagnostics(sourceFile, bindDiagnostics, checkDiagnostics, isCheckJs ? sourceFile.jsDocDiagnostics : undefined);
+            });
+        }
+
+        function getMergedDiagnostics(sourceFile: SourceFile, ...allDiagnostics: (readonly Diagnostic[] | undefined)[]) {
+            let diagnostics: Diagnostic[] | undefined;
+
+            for (const diags of allDiagnostics) {
+                if (diags) {
+                    for (const diag of diags) {
+                        if (shouldReportDiagnostic(diag)) {
+                            diagnostics = append(diagnostics, diag);
                         }
                     }
                 }
-                return diagnostics || emptyArray;
-            });
+            }
+
+            // Check for error comment lines last, after all possible checks have produced diagnostics
+            diagnostics = checkExpectedErrors(sourceFile, diagnostics);
+
+            return diagnostics || emptyArray;
         }
 
         function getSuggestionDiagnostics(sourceFile: SourceFile, cancellationToken: CancellationToken): readonly DiagnosticWithLocation[] {
@@ -1758,29 +1755,38 @@ namespace ts {
             });
         }
 
-        /**
-         * Skip errors if previous line start with '// @ts-ignore' comment, not counting non-empty non-comment lines
-         */
-        function shouldReportDiagnostic(diagnostic: Diagnostic) {
-            const { file, start } = diagnostic;
-            if (file) {
-                const lineStarts = getLineStarts(file);
-                let { line } = computeLineAndCharacterOfPosition(lineStarts, start!); // TODO: GH#18217
-                while (line > 0) {
-                    const previousLineText = file.text.slice(lineStarts[line - 1], lineStarts[line]);
-                    const result = ignoreDiagnosticCommentRegEx.exec(previousLineText);
-                    if (!result) {
-                        // non-empty line
-                        return true;
+        function checkExpectedErrors(sourceFile: SourceFile, diagnostics?: Diagnostic[]) {
+            if (!sourceFile.expectedErrors?.length) {
+                return diagnostics;
+            }
+
+            const remainingExpectedErrors = createMapFromEntries(sourceFile.expectedErrors.map(expectedError => ([
+                `${expectedError.line}`,
+                expectedError,
+            ])));
+
+            if (diagnostics) {
+                for (const diagnostic of diagnostics) {
+                    const matchedLine = getPrecedingCommentDirectiveLine(diagnostic, expectedErrorCommentRegExp);
+
+                    if (matchedLine !== -1 && remainingExpectedErrors.has(`${matchedLine}`)) {
+                        remainingExpectedErrors.delete(`${matchedLine}`);
                     }
-                    if (result[3]) {
-                        // @ts-ignore
-                        return false;
-                    }
-                    line--;
                 }
             }
-            return true;
+
+            for (const expectedError of arrayFrom(remainingExpectedErrors.values())) {
+                diagnostics = append(diagnostics, createDiagnosticForCommentRange(sourceFile, expectedError.range, Diagnostics.Unused_ts_expect_error_directive));
+            }
+
+            return diagnostics;
+        }
+
+        /**
+         * Skip errors if previous line start with '// @ts-ignore' comment
+         */
+        function shouldReportDiagnostic(diagnostic: Diagnostic) {
+            return getPrecedingCommentDirectiveLine(diagnostic, ignoreDiagnosticCommentRegEx) === -1;
         }
 
         function getJSSyntacticDiagnosticsForFile(sourceFile: SourceFile): DiagnosticWithLocation[] {

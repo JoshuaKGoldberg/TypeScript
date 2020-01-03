@@ -1,6 +1,7 @@
 namespace ts {
     export function preProcessFile(sourceText: string, readImportFiles = true, detectJavaScriptImports = false): PreProcessedFileInfo {
         const pragmaContext: PragmaContext = {
+            expectedErrors: [],
             languageVersion: ScriptTarget.ES5, // controls whether the token scanner considers unicode identifiers or not - shouldn't matter, since we're only using it for trivia
             pragmas: undefined,
             checkJsDirective: undefined,
@@ -327,7 +328,7 @@ namespace ts {
         if (readImportFiles) {
             processImports();
         }
-        processCommentPragmas(pragmaContext, sourceText);
+        processCommentDirectives(pragmaContext, sourceText, computeLineStarts(sourceText));
         processPragmasIntoFields(pragmaContext, noop);
         if (externalModule) {
             // for external modules module all nested ambient modules are augmentations

@@ -466,6 +466,44 @@ namespace ts {
             text.charCodeAt(start + 2) === CharacterCodes.exclamation;
     }
 
+    /**
+     * Test for whether comment's text is a `@ts-expect-error` directive.
+     */
+    export const expectedErrorCommentRegExp = /(^\s*$)|(^\s*\/\/\/?\s*(@ts-expect-error))/; // and a two
+
+    /**
+     * Test for whether a comment's text contains a `@ts-ignore` directive.
+     */
+    export const ignoreDiagnosticCommentRegEx = /(^\s*$)|(^\s*\/\/\/?\s*((@ts-expect-error)|(@ts-ignore))?)/;
+
+    /**
+     * @returns Whether the preceding line matches a comment directive, not counting non-empty non-comment lines
+     */
+    export function getPrecedingCommentDirectiveLine(diagnostic: Diagnostic, test: RegExp) {
+        const { file, start } = diagnostic;
+        if (!file) {
+            return -1;
+        }
+
+        const lineStarts = getLineStarts(file);
+        let { line } = computeLineAndCharacterOfPosition(lineStarts, start!); // TODO: GH#18217
+        while (line > 0) {
+            const previousLineText = file.text.slice(lineStarts[line - 1], lineStarts[line]);
+            const result = test.exec(previousLineText);
+            if (!result) {
+                // non-empty line
+                return -1;
+            }
+            if (result[3]) {
+                // matched directive
+                return line - 1;
+            }
+            line--;
+        }
+
+        return -1;
+    }
+
     export function getTokenPosOfNode(node: Node, sourceFile?: SourceFileLike, includeJsDoc?: boolean): number {
         // With nodes that have no width (i.e. 'Missing' nodes), we actually *don't*
         // want to skip trivia because this will launch us forward to the next token.
@@ -898,6 +936,17 @@ namespace ts {
             category: messageChain.category,
             messageText: messageChain.next ? messageChain : messageChain.messageText,
             relatedInformation
+        };
+    }
+
+    export function createDiagnosticForCommentRange(sourceFile: SourceFile, range: CommentRange, message: DiagnosticMessage): DiagnosticWithLocation {
+        return {
+            file: sourceFile,
+            start: range.pos,
+            length: range.end - range.pos,
+            code: message.code,
+            category: message.category,
+            messageText: message.message,
         };
     }
 

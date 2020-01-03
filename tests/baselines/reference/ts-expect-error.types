@@ -1,0 +1,19 @@
+=== tests/cases/conformance/directives/ts-expect-error.ts ===
+// @ts-expect-error
+var ignoredCommented: number = 'nope';
+>ignoredCommented : number
+>'nope' : "nope"
+
+// @ts-expect-error
+var validCommented: string = 'nope';
+>validCommented : string
+>'nope' : "nope"
+
+var invalidPlain: number = 'nope';
+>invalidPlain : number
+>'nope' : "nope"
+
+var validPlain: string = 'nope';
+>validPlain : string
+>'nope' : "nope"
+
