@@ -25,7 +25,11 @@ namespace ts {
         isReservedWord(): boolean;
         isUnterminated(): boolean;
         /* @internal */
+        getErrorExpectations(): TextRange[];
+        /* @internal */
         getTokenFlags(): TokenFlags;
+        /* @internal */
+        prepare(): void
         reScanGreaterToken(): SyntaxKind;
         reScanSlashToken(): SyntaxKind;
         reScanTemplateToken(): SyntaxKind;
@@ -38,6 +42,7 @@ namespace ts {
         scanJsxToken(): JsxTokenSyntaxKind;
         scanJsDocToken(): JSDocSyntaxKind;
         scan(): SyntaxKind;
+        
         getText(): string;
         // Sets the text for the scanner to scan.  An optional subrange starting point and length
         // can be provided to have the scanner only scan a portion of the text.
@@ -882,6 +887,8 @@ namespace ts {
 
         let inJSDocType = 0;
 
+        let errorExpectations: TextRange[] = [];
+
         setText(text, start, length);
 
         const scanner: Scanner = {
@@ -897,7 +904,9 @@ namespace ts {
             isIdentifier: () => token === SyntaxKind.Identifier || token > SyntaxKind.LastReservedWord,
             isReservedWord: () => token >= SyntaxKind.FirstReservedWord && token <= SyntaxKind.LastReservedWord,
             isUnterminated: () => (tokenFlags & TokenFlags.Unterminated) !== 0,
+            getErrorExpectations: () => errorExpectations,
             getTokenFlags: () => tokenFlags,
+            prepare,
             reScanGreaterToken,
             reScanSlashToken,
             reScanTemplateToken,
@@ -932,6 +941,10 @@ namespace ts {
         }
 
         return scanner;
+
+        function prepare() {
+            errorExpectations = [];
+        }
 
         function error(message: DiagnosticMessage): void;
         function error(message: DiagnosticMessage, errPos: number, length: number): void;
@@ -1641,7 +1654,10 @@ namespace ts {
                                     break;
                                 }
                                 pos++;
+                            }
 
+                            if (expectedErrorCommentRegExp.test(text.slice(startPos, pos))) {
+                                errorExpectations.push({ pos: tokenPos, end: pos })
                             }
 
                             if (skipTrivia) {
@@ -2256,6 +2272,7 @@ namespace ts {
             const saveToken = token;
             const saveTokenValue = tokenValue;
             const saveTokenFlags = tokenFlags;
+            const saveErrorExpectations = errorExpectations;
 
             setText(text, start, length);
             const result = callback();
@@ -2267,6 +2284,7 @@ namespace ts {
             token = saveToken;
             tokenValue = saveTokenValue;
             tokenFlags = saveTokenFlags;
+            errorExpectations = saveErrorExpectations;
 
             return result;
         }

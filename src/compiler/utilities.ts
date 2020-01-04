@@ -469,7 +469,7 @@ namespace ts {
     /**
      * Test for whether comment's text is a `@ts-expect-error` directive.
      */
-    export const expectedErrorCommentRegExp = /(^\s*$)|(^\s*\/\/\/?\s*(@ts-expect-error))/; // and a two
+    export const expectedErrorCommentRegExp = /(^\s*$)|(^\s*\/\/\/?\s*(@ts-expect-error))/; // three...
 
     /**
      * Test for whether a comment's text contains a `@ts-ignore` directive.
@@ -939,7 +939,7 @@ namespace ts {
         };
     }
 
-    export function createDiagnosticForCommentRange(sourceFile: SourceFile, range: CommentRange, message: DiagnosticMessage): DiagnosticWithLocation {
+    export function createDiagnosticForRange(sourceFile: SourceFile, range: TextRange, message: DiagnosticMessage): DiagnosticWithLocation {
         return {
             file: sourceFile,
             start: range.pos,

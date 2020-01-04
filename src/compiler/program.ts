@@ -1744,7 +1744,7 @@ namespace ts {
             }
 
             // Check for error comment lines last, after all possible checks have produced diagnostics
-            diagnostics = checkExpectedErrors(sourceFile, diagnostics);
+            diagnostics = checkErrorExpectations(sourceFile, diagnostics);
 
             return diagnostics || emptyArray;
         }
@@ -1755,13 +1755,13 @@ namespace ts {
             });
         }
 
-        function checkExpectedErrors(sourceFile: SourceFile, diagnostics?: Diagnostic[]) {
-            if (!sourceFile.expectedErrors?.length) {
+        function checkErrorExpectations(sourceFile: SourceFile, diagnostics?: Diagnostic[]) {
+            if (!sourceFile.errorExpectations?.length) {
                 return diagnostics;
             }
 
-            const remainingExpectedErrors = createMapFromEntries(sourceFile.expectedErrors.map(expectedError => ([
-                `${expectedError.line}`,
+            const remainingErrorExpectations = createMapFromEntries(sourceFile.errorExpectations.map(expectedError => ([
+                `${getLineAndCharacterOfPosition(sourceFile, expectedError.pos).line}`,
                 expectedError,
             ])));
 
@@ -1769,14 +1769,14 @@ namespace ts {
                 for (const diagnostic of diagnostics) {
                     const matchedLine = getPrecedingCommentDirectiveLine(diagnostic, expectedErrorCommentRegExp);
 
-                    if (matchedLine !== -1 && remainingExpectedErrors.has(`${matchedLine}`)) {
-                        remainingExpectedErrors.delete(`${matchedLine}`);
+                    if (matchedLine !== -1 && remainingErrorExpectations.has(`${matchedLine}`)) {
+                        remainingErrorExpectations.delete(`${matchedLine}`);
                     }
                 }
             }
 
-            for (const expectedError of arrayFrom(remainingExpectedErrors.values())) {
-                diagnostics = append(diagnostics, createDiagnosticForCommentRange(sourceFile, expectedError.range, Diagnostics.Unused_ts_expect_error_directive));
+            for (const expectedError of arrayFrom(remainingErrorExpectations.values())) {
+                diagnostics = append(diagnostics, createDiagnosticForRange(sourceFile, expectedError, Diagnostics.Unused_ts_expect_error_directive));
             }
 
             return diagnostics;

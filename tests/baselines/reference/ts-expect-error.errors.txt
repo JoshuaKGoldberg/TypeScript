@@ -1,15 +1,21 @@
 tests/cases/conformance/directives/ts-expect-error.ts(1,1): error TS2578: Unused '@ts-expect-error' directive.
-tests/cases/conformance/directives/ts-expect-error.ts(7,5): error TS2322: Type '"nope"' is not assignable to type 'number'.
+tests/cases/conformance/directives/ts-expect-error.ts(13,5): error TS2322: Type '"nope"' is not assignable to type 'number'.
 
 
 ==== tests/cases/conformance/directives/ts-expect-error.ts (2 errors) ====
-    // @ts-expect-error
-    ~~~~~~~~~~~~~~~~~~~
+    // @ts-expect-error additional commenting
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !!! error TS2578: Unused '@ts-expect-error' directive.
-    var ignoredCommented: number = 'nope';
+    var invalidCommentedFancy: number = 'nope';
+    
+    // @ts-expect-error additional commenting
+    var validCommentedFancy: string = 'nope';
     
     // @ts-expect-error
-    var validCommented: string = 'nope';
+    var invalidCommentedPlain: number = 'nope';
+    
+    // @ts-expect-error
+    var validCommentedPlain: string = 'nope';
     
     var invalidPlain: number = 'nope';
         ~~~~~~~~~~~~

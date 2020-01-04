@@ -1,12 +1,18 @@
-tests/cases/conformance/directives/ts-ignore.ts(7,5): error TS2322: Type '"nope"' is not assignable to type 'number'.
+tests/cases/conformance/directives/ts-ignore.ts(13,5): error TS2322: Type '"nope"' is not assignable to type 'number'.
 
 
 ==== tests/cases/conformance/directives/ts-ignore.ts (1 errors) ====
-    // @ts-ignore
-    var ignoredCommented: number = 'nope';
+    // @ts-ignore with additional commenting
+    var invalidCommentedFancy: number = 'nope';
+    
+    // @ts-ignore with additional commenting
+    var validCommentedFancy: string = 'nope';
     
     // @ts-ignore
-    var validCommented: string = 'nope';
+    var invalidCommentedPlain: number = 'nope';
+    
+    // @ts-ignore
+    var validCommentedPlain: string = 'nope';
     
     var invalidPlain: number = 'nope';
         ~~~~~~~~~~~~

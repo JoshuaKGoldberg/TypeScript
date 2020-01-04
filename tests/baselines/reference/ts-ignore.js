@@ -1,9 +1,15 @@
 //// [ts-ignore.ts]
-// @ts-ignore
-var ignoredCommented: number = 'nope';
+// @ts-ignore with additional commenting
+var invalidCommentedFancy: number = 'nope';
+
+// @ts-ignore with additional commenting
+var validCommentedFancy: string = 'nope';
 
 // @ts-ignore
-var validCommented: string = 'nope';
+var invalidCommentedPlain: number = 'nope';
+
+// @ts-ignore
+var validCommentedPlain: string = 'nope';
 
 var invalidPlain: number = 'nope';
 
@@ -11,9 +17,13 @@ var validPlain: string = 'nope';
 
 
 //// [ts-ignore.js]
+// @ts-ignore with additional commenting
+var invalidCommentedFancy = 'nope';
+// @ts-ignore with additional commenting
+var validCommentedFancy = 'nope';
 // @ts-ignore
-var ignoredCommented = 'nope';
+var invalidCommentedPlain = 'nope';
 // @ts-ignore
-var validCommented = 'nope';
+var validCommentedPlain = 'nope';
 var invalidPlain = 'nope';
 var validPlain = 'nope';

@@ -2979,17 +2979,10 @@ namespace ts {
         /* @internal */ localJsxNamespace?: __String;
         /* @internal */ localJsxFactory?: EntityName;
 
-        // Lines expected to precede an error via // @ts-expect-error comments
-        /* @internal */ expectedErrors?: ExpectedErrorLine[];
+        // Comments comtaining @ts-expect-error directives
+        /* @internal */ errorExpectations?: TextRange[];
 
         /*@internal*/ exportedModulesFromDeclarationEmit?: ExportedModulesFromDeclarationEmit;
-    }
-
-    /** @internal */
-    export type ExpectedErrorLine = {
-        line: number;
-        range: CommentRange;
-        text: string;
     }
 
     /*@internal*/

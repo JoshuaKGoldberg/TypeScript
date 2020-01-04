@@ -863,10 +863,11 @@ namespace ts {
             sourceFile = createSourceFile(fileName, languageVersion, scriptKind, isDeclarationFile);
             sourceFile.flags = contextFlags;
 
-            // Prime the scanner.
             nextToken();
+            scanner.prepare();
+
             // A member of ReadonlyArray<T> isn't assignable to a member of T[] (and prevents a direct cast) - but this is where we set up those members so they can be readonly in the future
-            processCommentDirectives(sourceFile as {} as PragmaContext, sourceText, getLineStarts(sourceFile));
+            processCommentPragmas(sourceFile as {} as PragmaContext, sourceText);
             processPragmasIntoFields(sourceFile as {} as PragmaContext, reportPragmaDiagnostic);
 
             sourceFile.statements = parseList(ParsingContext.SourceElements, parseStatement);
@@ -879,6 +880,7 @@ namespace ts {
             sourceFile.identifierCount = identifierCount;
             sourceFile.identifiers = identifiers;
             sourceFile.parseDiagnostics = parseDiagnostics;
+            sourceFile.errorExpectations = scanner.getErrorExpectations();
 
             if (setParentNodes) {
                 fixupParentReferences(sourceFile);
@@ -8125,7 +8127,6 @@ namespace ts {
 
     /*@internal*/
     export interface PragmaContext {
-        expectedErrors: ExpectedErrorLine[];
         languageVersion: ScriptTarget;
         pragmas?: PragmaMap;
         checkJsDirective?: CheckJsDirective;
@@ -8138,23 +8139,12 @@ namespace ts {
     }
 
     /*@internal*/
-    export function processCommentDirectives(context: PragmaContext, sourceText: string, lineStarts: readonly number[]): void {
+    export function processCommentPragmas(context: PragmaContext, sourceText: string): void {
         const pragmas: PragmaPseudoMapEntry[] = [];
 
         for (const range of getLeadingCommentRanges(sourceText, 0) || emptyArray) {
             const text = sourceText.substring(range.pos, range.end);
             extractPragmas(pragmas, range, text);
-
-            if (expectedErrorCommentRegExp.test(text)) {
-                context.expectedErrors = append(
-                    context.expectedErrors,
-                    {
-                        line: computeLineAndCharacterOfPosition(lineStarts, range.pos).line,
-                        range,
-                        text,
-                    }
-                );
-            }
         }
 
         context.pragmas = createMap() as PragmaMap;
