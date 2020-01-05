@@ -1,7 +1,7 @@
 /* @internal */
 namespace ts.formatting {
-    const standardScanner = createScanner(ScriptTarget.Latest, SkipTrivia.None, LanguageVariant.Standard);
-    const jsxScanner = createScanner(ScriptTarget.Latest, SkipTrivia.None, LanguageVariant.JSX);
+    const standardScanner = createScanner(ScriptTarget.Latest, /*skipTrivia*/ false, LanguageVariant.Standard);
+    const jsxScanner = createScanner(ScriptTarget.Latest, /*skipTrivia*/ false, LanguageVariant.JSX);
 
     export interface FormattingScanner {
         advance(): void;

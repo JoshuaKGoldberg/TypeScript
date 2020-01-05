@@ -599,7 +599,7 @@ namespace ts {
     namespace Parser {
         // Share a single scanner across all calls to parse a source file.  This helps speed things
         // up by avoiding the cost of creating/compiling scanners over and over again.
-        const scanner = createScanner(ScriptTarget.Latest, SkipTrivia.AllButComments);
+        const scanner = createScanner(ScriptTarget.Latest, /*skipTrivia*/ true);
         const disallowInAndDecoratorContext = NodeFlags.DisallowInContext | NodeFlags.DecoratorContext;
 
         // capture constructors in 'initializeState' to avoid null checks
@@ -612,7 +612,6 @@ namespace ts {
         let sourceFile: SourceFile;
         let parseDiagnostics: DiagnosticWithLocation[];
         let syntaxCursor: IncrementalParser.SyntaxCursor | undefined;
-        let errorExpectations: TextRange[] | undefined;
 
         let currentToken: SyntaxKind;
         let sourceText: string;
@@ -813,7 +812,6 @@ namespace ts {
             sourceText = _sourceText;
             syntaxCursor = _syntaxCursor;
 
-            errorExpectations = [];
             parseDiagnostics = [];
             parsingContext = 0;
             identifiers = createMap<string>();
@@ -844,11 +842,11 @@ namespace ts {
 
         function clearState() {
             // Clear out the text the scanner is pointing at, so it doesn't keep anything alive unnecessarily.
+            scanner.setErrorExpectations(undefined);
             scanner.setText("");
             scanner.setOnError(undefined);
 
             // Clear any data.  We don't want to accidentally hold onto it for too long.
-            errorExpectations = undefined;
             parseDiagnostics = undefined!;
             sourceFile = undefined!;
             identifiers = undefined!;
@@ -866,7 +864,6 @@ namespace ts {
             sourceFile = createSourceFile(fileName, languageVersion, scriptKind, isDeclarationFile);
             sourceFile.flags = contextFlags;
 
-            // Prime the scanner.
             nextToken();
 
             // A member of ReadonlyArray<T> isn't assignable to a member of T[] (and prevents a direct cast) - but this is where we set up those members so they can be readonly in the future
@@ -879,11 +876,11 @@ namespace ts {
 
             setExternalModuleIndicator(sourceFile);
 
+            sourceFile.errorExpectations = scanner.getErrorExpectations();
             sourceFile.nodeCount = nodeCount;
             sourceFile.identifierCount = identifierCount;
             sourceFile.identifiers = identifiers;
             sourceFile.parseDiagnostics = parseDiagnostics;
-            sourceFile.errorExpectations = errorExpectations;
 
             if (setParentNodes) {
                 fixupParentReferences(sourceFile);
@@ -1115,32 +1112,7 @@ namespace ts {
         }
 
         function nextTokenWithoutCheck() {
-            while (true) {
-                const upcomingToken = scanner.scan();
-
-                if (!handleUpcomingComment(upcomingToken)) {
-                    return currentToken =  upcomingToken; // oh boy here we go
-                }
-            }
-        }
-
-        /**
-         * @returns Whether a new trivia kind is upcoming. 
-         */
-        function handleUpcomingComment(upcomingToken: SyntaxKind) {
-            if (upcomingToken !== SyntaxKind.SingleLineCommentTrivia && upcomingToken !== SyntaxKind.MultiLineCommentTrivia) {
-                return false;
-            }
-
-            const pos = scanner.getTokenPos();
-            const end = scanner.getTextPos();
-            const text = sourceText.slice(pos, end);
-
-            if (expectedErrorCommentRegExp.test(text)) {
-                errorExpectations = append(errorExpectations, { pos, end });
-            }
-
-            return true;
+            return currentToken = scanner.scan();
         }
 
         function nextToken(): SyntaxKind {

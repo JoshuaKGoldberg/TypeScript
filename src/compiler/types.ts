@@ -2979,7 +2979,7 @@ namespace ts {
         /* @internal */ localJsxNamespace?: __String;
         /* @internal */ localJsxFactory?: EntityName;
 
-        // Comments comtaining @ts-expect-error directives
+        // Comments comtaining @ts-expect-error directives, in order.
         /* @internal */ errorExpectations?: TextRange[];
 
         /*@internal*/ exportedModulesFromDeclarationEmit?: ExportedModulesFromDeclarationEmit;

@@ -25,6 +25,8 @@ namespace ts {
         isReservedWord(): boolean;
         isUnterminated(): boolean;
         /* @internal */
+        getErrorExpectations(): TextRange[] | undefined;
+        /* @internal */
         getTokenFlags(): TokenFlags;
         reScanGreaterToken(): SyntaxKind;
         reScanSlashToken(): SyntaxKind;
@@ -40,6 +42,8 @@ namespace ts {
         scan(): SyntaxKind;
         
         getText(): string;
+        /* @internal */
+        setErrorExpectations(errorExpectations: TextRange[] | undefined): void;
         // Sets the text for the scanner to scan.  An optional subrange starting point and length
         // can be provided to have the scanner only scan a portion of the text.
         setText(text: string | undefined, start?: number, length?: number): void;
@@ -853,15 +857,9 @@ namespace ts {
         return true;
     }
 
-    export enum SkipTrivia {
-        All,
-        AllButComments,
-        None,
-    }
-
     // Creates a scanner over a (possibly unspecified) range of a piece of text.
     export function createScanner(languageVersion: ScriptTarget,
-        skipTrivia: SkipTrivia,
+        skipTrivia: boolean,
         languageVariant = LanguageVariant.Standard,
         textInitial?: string,
         onError?: ErrorCallback,
@@ -889,6 +887,8 @@ namespace ts {
 
         let inJSDocType = 0;
 
+        let errorExpectations: TextRange[] | undefined;
+
         setText(text, start, length);
 
         const scanner: Scanner = {
@@ -904,6 +904,7 @@ namespace ts {
             isIdentifier: () => token === SyntaxKind.Identifier || token > SyntaxKind.LastReservedWord,
             isReservedWord: () => token >= SyntaxKind.FirstReservedWord && token <= SyntaxKind.LastReservedWord,
             isUnterminated: () => (tokenFlags & TokenFlags.Unterminated) !== 0,
+            getErrorExpectations: () => errorExpectations,
             getTokenFlags: () => tokenFlags,
             reScanGreaterToken,
             reScanSlashToken,
@@ -918,6 +919,7 @@ namespace ts {
             scanJsDocToken,
             scan,
             getText,
+            setErrorExpectations,
             setText,
             setScriptTarget,
             setLanguageVariant,
@@ -1496,7 +1498,7 @@ namespace ts {
                 // Special handling for shebang
                 if (ch === CharacterCodes.hash && pos === 0 && isShebangTrivia(text, pos)) {
                     pos = scanShebangTrivia(text, pos);
-                    if (skipTrivia !== SkipTrivia.None) {
+                    if (skipTrivia) {
                         continue;
                     }
                     else {
@@ -1508,7 +1510,7 @@ namespace ts {
                     case CharacterCodes.lineFeed:
                     case CharacterCodes.carriageReturn:
                         tokenFlags |= TokenFlags.PrecedingLineBreak;
-                        if (skipTrivia !== SkipTrivia.None) {
+                        if (skipTrivia) {
                             pos++;
                             continue;
                         }
@@ -1544,7 +1546,7 @@ namespace ts {
                     case CharacterCodes.mathematicalSpace:
                     case CharacterCodes.ideographicSpace:
                     case CharacterCodes.byteOrderMark:
-                        if (skipTrivia !== SkipTrivia.None) {
+                        if (skipTrivia) {
                             pos++;
                             continue;
                         }
@@ -1650,7 +1652,11 @@ namespace ts {
                                 pos++;
                             }
 
-                            if (skipTrivia === SkipTrivia.All) {
+                            if (expectedErrorCommentRegExp.test(text.slice(startPos, pos))) {
+                                errorExpectations = append(errorExpectations, { pos: tokenPos, end: pos });
+                            }
+
+                            if (skipTrivia) {
                                 continue;
                             }
                             else {
@@ -1684,7 +1690,7 @@ namespace ts {
                                 error(Diagnostics.Asterisk_Slash_expected);
                             }
 
-                            if (skipTrivia === SkipTrivia.All) {
+                            if (skipTrivia) {
                                 continue;
                             }
                             else {
@@ -1766,7 +1772,7 @@ namespace ts {
                     case CharacterCodes.lessThan:
                         if (isConflictMarkerTrivia(text, pos)) {
                             pos = scanConflictMarkerTrivia(text, pos, error);
-                            if (skipTrivia !== SkipTrivia.None) {
+                            if (skipTrivia) {
                                 continue;
                             }
                             else {
@@ -1793,7 +1799,7 @@ namespace ts {
                     case CharacterCodes.equals:
                         if (isConflictMarkerTrivia(text, pos)) {
                             pos = scanConflictMarkerTrivia(text, pos, error);
-                            if (skipTrivia !== SkipTrivia.None) {
+                            if (skipTrivia) {
                                 continue;
                             }
                             else {
@@ -1815,7 +1821,7 @@ namespace ts {
                     case CharacterCodes.greaterThan:
                         if (isConflictMarkerTrivia(text, pos)) {
                             pos = scanConflictMarkerTrivia(text, pos, error);
-                            if (skipTrivia !== SkipTrivia.None) {
+                            if (skipTrivia) {
                                 continue;
                             }
                             else {
@@ -1854,7 +1860,7 @@ namespace ts {
                     case CharacterCodes.bar:
                         if (isConflictMarkerTrivia(text, pos)) {
                             pos = scanConflictMarkerTrivia(text, pos, error);
-                            if (skipTrivia !== SkipTrivia.None) {
+                            if (skipTrivia) {
                                 continue;
                             }
                             else {
@@ -2262,6 +2268,7 @@ namespace ts {
             const saveToken = token;
             const saveTokenValue = tokenValue;
             const saveTokenFlags = tokenFlags;
+            const saveErrorExpectations = errorExpectations;
 
             setText(text, start, length);
             const result = callback();
@@ -2273,6 +2280,7 @@ namespace ts {
             token = saveToken;
             tokenValue = saveTokenValue;
             tokenFlags = saveTokenFlags;
+            errorExpectations = saveErrorExpectations;
 
             return result;
         }
@@ -2287,6 +2295,10 @@ namespace ts {
 
         function getText(): string {
             return text;
+        }
+
+        function setErrorExpectations(newErrorExpectations: TextRange[] | undefined) {
+            errorExpectations = newErrorExpectations;
         }
 
         function setText(newText: string | undefined, start: number | undefined, length: number | undefined) {

@@ -1648,21 +1648,7 @@ namespace ts {
             const fileProcessingDiagnosticsInFile = fileProcessingDiagnostics.getDiagnostics(sourceFile.fileName);
             const programDiagnosticsInFile = programDiagnostics.getDiagnostics(sourceFile.fileName);
 
-            return getReportedDiagnostics(fileProcessingDiagnosticsInFile, programDiagnosticsInFile);
-        }
-
-        function getReportedDiagnostics(...allPotentialDiagnostics: readonly Diagnostic[][]) {
-            let reportedDiagnostics: Diagnostic[] | undefined;
-
-            for (const potentialDiagnostics of allPotentialDiagnostics) {
-                for (const diagnostic of potentialDiagnostics) {
-                    if (shouldReportDiagnostic(diagnostic)) {
-                        reportedDiagnostics = append(reportedDiagnostics, diagnostic);
-                    }
-                }
-            }
-
-            return reportedDiagnostics || emptyArray;
+            return getMergedDiagnostics(sourceFile, fileProcessingDiagnosticsInFile, programDiagnosticsInFile);
         }
 
         function getDeclarationDiagnostics(sourceFile?: SourceFile, cancellationToken?: CancellationToken): readonly DiagnosticWithLocation[] {
@@ -1740,30 +1726,27 @@ namespace ts {
                 const bindDiagnostics: readonly Diagnostic[] = includeBindAndCheckDiagnostics ? sourceFile.bindDiagnostics : emptyArray;
                 const checkDiagnostics = includeBindAndCheckDiagnostics ? typeChecker.getDiagnostics(sourceFile, cancellationToken) : emptyArray;
 
-                return getAllAndReportedDiagnostics(sourceFile, bindDiagnostics, checkDiagnostics, isCheckJs ? sourceFile.jsDocDiagnostics : undefined);
+                return getMergedDiagnostics(sourceFile, bindDiagnostics, checkDiagnostics, isCheckJs ? sourceFile.jsDocDiagnostics : undefined);
             });
         }
 
-        function getAllAndReportedDiagnostics(sourceFile: SourceFile, ...allPotentialDiagnostics: (readonly Diagnostic[] | undefined)[]) {
-            let allDiagnostics: Diagnostic[] | undefined;
-            let reportedDiagnostics: Diagnostic[] | undefined;
+        function getMergedDiagnostics(sourceFile: SourceFile, ...allDiagnostics: (readonly Diagnostic[] | undefined)[]) {
+            let diagnostics: Diagnostic[] | undefined;
 
-            for (const potentialDiagnostics of allPotentialDiagnostics) {
-                if (potentialDiagnostics) {
-                    for (const diagnostic of potentialDiagnostics) {
-                        allDiagnostics = append(allDiagnostics, diagnostic);
-    
-                        if (shouldReportDiagnostic(diagnostic)) {
-                            reportedDiagnostics = append(reportedDiagnostics, diagnostic);
+            for (const diags of allDiagnostics) {
+                if (diags) {
+                    for (const diag of diags) {
+                        if (shouldReportDiagnostic(diag)) {
+                            diagnostics = append(diagnostics, diag);
                         }
                     }
                 }
             }
 
             // Check for error comment lines last, after all possible checks have produced diagnostics
-            reportedDiagnostics = checkErrorExpectations(sourceFile, allDiagnostics, reportedDiagnostics);
+            diagnostics = checkErrorExpectations(sourceFile, diagnostics);
 
-            return reportedDiagnostics || emptyArray;
+            return diagnostics || emptyArray;
         }
 
         function getSuggestionDiagnostics(sourceFile: SourceFile, cancellationToken: CancellationToken): readonly DiagnosticWithLocation[] {
@@ -1772,18 +1755,18 @@ namespace ts {
             });
         }
 
-        function checkErrorExpectations(sourceFile: SourceFile, allDiagnostics: Diagnostic[] | undefined, reportedDiagnostics: Diagnostic[] | undefined) {
+        function checkErrorExpectations(sourceFile: SourceFile, diagnostics?: Diagnostic[]) {
             if (!sourceFile.errorExpectations?.length) {
-                return reportedDiagnostics;
+                return diagnostics;
             }
 
             const remainingErrorExpectations = createMapFromEntries(sourceFile.errorExpectations.map(expectedError => ([
-                `${getLineAndCharacterOfPosition(sourceFile, expectedError.end).line}`,
+                `${getLineAndCharacterOfPosition(sourceFile, expectedError.pos).line}`,
                 expectedError,
             ])));
 
-            if (allDiagnostics) {
-                for (const diagnostic of allDiagnostics) {
+            if (diagnostics) {
+                for (const diagnostic of diagnostics) {
                     const matchedLine = getPrecedingCommentDirectiveLine(diagnostic, expectedErrorCommentRegExp);
 
                     if (matchedLine !== -1 && remainingErrorExpectations.has(`${matchedLine}`)) {
@@ -1793,10 +1776,10 @@ namespace ts {
             }
 
             for (const expectedError of arrayFrom(remainingErrorExpectations.values())) {
-                reportedDiagnostics = append(reportedDiagnostics, createDiagnosticForRange(sourceFile, expectedError, Diagnostics.Unused_ts_expect_error_directive));
+                diagnostics = append(diagnostics, createDiagnosticForRange(sourceFile, expectedError, Diagnostics.Unused_ts_expect_error_directive));
             }
 
-            return reportedDiagnostics;
+            return diagnostics;
         }
 
         /**

@@ -1,7 +1,7 @@
 namespace ts {
     /** The classifier is used for syntactic highlighting in editors via the TSServer */
     export function createClassifier(): Classifier {
-        const scanner = createScanner(ScriptTarget.Latest, SkipTrivia.None);
+        const scanner = createScanner(ScriptTarget.Latest, /*skipTrivia*/ false);
 
         function getClassificationsForLine(text: string, lexState: EndOfLineState, syntacticClassifierAbsent: boolean): ClassificationResult {
             return convertClassificationsToResult(getEncodedLexicalClassifications(text, lexState, syntacticClassifierAbsent), text);
@@ -599,8 +599,8 @@ namespace ts {
         const spanLength = span.length;
 
         // Make a scanner we can get trivia from.
-        const triviaScanner = createScanner(ScriptTarget.Latest, SkipTrivia.None, sourceFile.languageVariant, sourceFile.text);
-        const mergeConflictScanner = createScanner(ScriptTarget.Latest, SkipTrivia.None, sourceFile.languageVariant, sourceFile.text);
+        const triviaScanner = createScanner(ScriptTarget.Latest, /*skipTrivia*/ false, sourceFile.languageVariant, sourceFile.text);
+        const mergeConflictScanner = createScanner(ScriptTarget.Latest, /*skipTrivia*/ false, sourceFile.languageVariant, sourceFile.text);
 
         const result: number[] = [];
         processElement(sourceFile);

@@ -1464,7 +1464,7 @@ namespace ts {
 
     function getCookedText(kind: TemplateLiteralToken["kind"], rawText: string) {
         if (!rawTextScanner) {
-            rawTextScanner = createScanner(ScriptTarget.Latest, SkipTrivia.None, LanguageVariant.Standard);
+            rawTextScanner = createScanner(ScriptTarget.Latest, /*skipTrivia*/ false, LanguageVariant.Standard);
         }
         switch (kind) {
             case SyntaxKind.NoSubstitutionTemplateLiteral:
