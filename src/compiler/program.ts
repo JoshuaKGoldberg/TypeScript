@@ -1754,6 +1754,15 @@ namespace ts {
             return diagnostics;
         }
 
+        function getDiagnosticsPastDirectives(sourceFile: SourceFile, commentDirectives: CommentDirective[], flatDiagnostics: Diagnostic[]) {
+            // Diagnostics are only reported if there is no comment directive preceding them
+            // This will modify the directives map by marking "used" ones with a corresponding diagnostic
+            const directives = createCommentDirectivesMap(sourceFile, commentDirectives);
+            const diagnostics = flatDiagnostics.filter(diagnostic => markPrecedingCommentDirectiveLine(diagnostic, directives) === -1);
+      
+            return { diagnostics, directives };
+        }
+
         /**
          * @returns The line index marked as preceding the diagnostic, or -1 if none was.
          */
@@ -1772,9 +1781,9 @@ namespace ts {
                     return line;
                 }
 
-                // Stop searching if the line is not empty
-                const previousLineText = file.text.slice(lineStarts[line - 1], lineStarts[line]);
-                if (previousLineText.trim().length !== 0) {
+                // Stop searching if the line is not empty and not a comment
+                const lineText = file.text.slice(lineStarts[line - 1], lineStarts[line]).trim();
+                if (lineText !== "" && !/^(\s*)\/\/(.*)$/.test(lineText)) {
                     return -1;
                 }
 
@@ -1782,15 +1791,6 @@ namespace ts {
             }
 
             return -1;
-        }
-
-        function getDiagnosticsPastDirectives(sourceFile: SourceFile, commentDirectives: CommentDirective[], flatDiagnostics: Diagnostic[]) {
-            // Diagnostics are only reported if there is no comment directive preceding them
-            // This will modify the directives map by marking "used" ones with a corresponding diagnostic
-            const directives = createCommentDirectivesMap(sourceFile, commentDirectives);
-            const diagnostics = flatDiagnostics.filter(diagnostic => markPrecedingCommentDirectiveLine(diagnostic, directives) === -1);
-      
-            return { diagnostics, directives };
         }
 
         function getSuggestionDiagnostics(sourceFile: SourceFile, cancellationToken: CancellationToken): readonly DiagnosticWithLocation[] {

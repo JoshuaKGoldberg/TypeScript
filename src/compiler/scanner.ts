@@ -1657,7 +1657,7 @@ namespace ts {
                                 pos++;
                             }
 
-                            const type = getDirectiveFromComment(text.slice(startPos, pos));
+                            const type = getDirectiveFromComment(text.slice(tokenPos, pos));
                             if (type !== undefined) {
                                 commentDirectives = append(
                                     commentDirectives,
