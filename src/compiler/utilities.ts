@@ -469,7 +469,7 @@ namespace ts {
     /**
      * Test for whether comment's text is a `@ts-expect-error` directive.
      */
-    export const expectedErrorCommentRegExp = /(^\s*$)|(^\s*\/\/\/?\s*(@ts-expect-error))/; // three...
+    export const expectedErrorCommentRegExp = /(^\s*$)|(^\s*\/\/\/?\s*(@ts-expect-error))/;
 
     /**
      * Test for whether a comment's text contains a `@ts-ignore` directive.
@@ -951,7 +951,7 @@ namespace ts {
     }
 
     export function getSpanOfTokenAtPosition(sourceFile: SourceFile, pos: number): TextSpan {
-        const scanner = createScanner(sourceFile.languageVersion, /*skipTrivia*/ true, sourceFile.languageVariant, sourceFile.text, /*onError:*/ undefined, pos);
+        const scanner = createScanner(sourceFile.languageVersion, SkipTrivia.All, sourceFile.languageVariant, sourceFile.text, /*onError:*/ undefined, pos);
         scanner.scan();
         const start = scanner.getTokenPos();
         return createTextSpanFromBounds(start, scanner.getTextPos());

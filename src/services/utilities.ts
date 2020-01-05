@@ -12,7 +12,7 @@ declare var Promise: PromiseConstructor; // eslint-disable-line no-var
 namespace ts {
     // These utilities are common to multiple language service features.
     //#region
-    export const scanner: Scanner = createScanner(ScriptTarget.Latest, /*skipTrivia*/ true);
+    export const scanner: Scanner = createScanner(ScriptTarget.Latest, SkipTrivia.All);
 
     export const enum SemanticMeaning {
         None = 0x0,
