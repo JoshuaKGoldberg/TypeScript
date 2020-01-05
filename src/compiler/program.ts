@@ -1648,7 +1648,16 @@ namespace ts {
             const fileProcessingDiagnosticsInFile = fileProcessingDiagnostics.getDiagnostics(sourceFile.fileName);
             const programDiagnosticsInFile = programDiagnostics.getDiagnostics(sourceFile.fileName);
 
-            return getMergedDiagnostics(sourceFile, fileProcessingDiagnosticsInFile, programDiagnosticsInFile);
+            return getMergedProgramDiagnostics(sourceFile, fileProcessingDiagnosticsInFile, programDiagnosticsInFile);
+        }
+
+        function getMergedProgramDiagnostics(sourceFile: SourceFile, ...allDiagnostics: (readonly Diagnostic[] | undefined)[]) {
+            const flatDiagnostics = flatten(allDiagnostics);
+            if (!sourceFile.commentDirectives?.length) {
+                return flatDiagnostics;
+            }
+
+            return getDiagnosticsPastDirectives(sourceFile, sourceFile.commentDirectives, flatDiagnostics).diagnostics;
         }
 
         function getDeclarationDiagnostics(sourceFile?: SourceFile, cancellationToken?: CancellationToken): readonly DiagnosticWithLocation[] {
@@ -1726,67 +1735,68 @@ namespace ts {
                 const bindDiagnostics: readonly Diagnostic[] = includeBindAndCheckDiagnostics ? sourceFile.bindDiagnostics : emptyArray;
                 const checkDiagnostics = includeBindAndCheckDiagnostics ? typeChecker.getDiagnostics(sourceFile, cancellationToken) : emptyArray;
 
-                return getMergedDiagnostics(sourceFile, bindDiagnostics, checkDiagnostics, isCheckJs ? sourceFile.jsDocDiagnostics : undefined);
+                return getMergedBindAndCheckDiagnostics(sourceFile, bindDiagnostics, checkDiagnostics, isCheckJs ? sourceFile.jsDocDiagnostics : undefined);
             });
         }
 
-        function getMergedDiagnostics(sourceFile: SourceFile, ...allDiagnostics: (readonly Diagnostic[] | undefined)[]) {
-            let diagnostics: Diagnostic[] | undefined;
-
-            for (const diags of allDiagnostics) {
-                if (diags) {
-                    for (const diag of diags) {
-                        if (shouldReportDiagnostic(diag)) {
-                            diagnostics = append(diagnostics, diag);
-                        }
-                    }
-                }
+        function getMergedBindAndCheckDiagnostics(sourceFile: SourceFile, ...allDiagnostics: (readonly Diagnostic[] | undefined)[]) {
+            const flatDiagnostics = flatten(allDiagnostics);
+            if (!sourceFile.commentDirectives?.length) {
+                return flatDiagnostics;
             }
 
-            // Check for error comment lines last, after all possible checks have produced diagnostics
-            diagnostics = checkErrorExpectations(sourceFile, diagnostics);
+            const { diagnostics, directives } = getDiagnosticsPastDirectives(sourceFile, sourceFile.commentDirectives, flatDiagnostics);
 
-            return diagnostics || emptyArray;
-        }
-
-        function getSuggestionDiagnostics(sourceFile: SourceFile, cancellationToken: CancellationToken): readonly DiagnosticWithLocation[] {
-            return runWithCancellationToken(() => {
-                return getDiagnosticsProducingTypeChecker().getSuggestionDiagnostics(sourceFile, cancellationToken);
-            });
-        }
-
-        function checkErrorExpectations(sourceFile: SourceFile, diagnostics?: Diagnostic[]) {
-            if (!sourceFile.errorExpectations?.length) {
-                return diagnostics;
-            }
-
-            const remainingErrorExpectations = createMapFromEntries(sourceFile.errorExpectations.map(expectedError => ([
-                `${getLineAndCharacterOfPosition(sourceFile, expectedError.pos).line}`,
-                expectedError,
-            ])));
-
-            if (diagnostics) {
-                for (const diagnostic of diagnostics) {
-                    const matchedLine = getPrecedingCommentDirectiveLine(diagnostic, expectedErrorCommentRegExp);
-
-                    if (matchedLine !== -1 && remainingErrorExpectations.has(`${matchedLine}`)) {
-                        remainingErrorExpectations.delete(`${matchedLine}`);
-                    }
-                }
-            }
-
-            for (const expectedError of arrayFrom(remainingErrorExpectations.values())) {
-                diagnostics = append(diagnostics, createDiagnosticForRange(sourceFile, expectedError, Diagnostics.Unused_ts_expect_error_directive));
+            for (const errorExpectation of directives.getUnusedExpectations()) {
+                diagnostics.push(createDiagnosticForRange(sourceFile, errorExpectation.range, Diagnostics.Unused_ts_expect_error_directive));
             }
 
             return diagnostics;
         }
 
         /**
-         * Skip errors if previous line start with '// @ts-ignore' comment
+         * @returns The line index marked as preceding the diagnostic, or -1 if none was.
          */
-        function shouldReportDiagnostic(diagnostic: Diagnostic) {
-            return getPrecedingCommentDirectiveLine(diagnostic, ignoreDiagnosticCommentRegEx) === -1;
+        function markPrecedingCommentDirectiveLine(diagnostic: Diagnostic, directives: CommentDirectivesMap) {
+            const { file, start } = diagnostic;
+            if (!file) {
+                return -1;
+            }
+
+            // Start out with the line just before the text
+            const lineStarts = getLineStarts(file);
+            let line = computeLineAndCharacterOfPosition(lineStarts, start!).line - 1; // TODO: GH#18217
+            while (line >= 0) {
+                // As soon as that line is known to have a comment directive, use that
+                if (directives.markUsed(line)) {
+                    return line;
+                }
+
+                // Stop searching if the line is not empty
+                const previousLineText = file.text.slice(lineStarts[line - 1], lineStarts[line]);
+                if (previousLineText.trim().length !== 0) {
+                    return -1;
+                }
+
+                line--;
+            }
+
+            return -1;
+        }
+
+        function getDiagnosticsPastDirectives(sourceFile: SourceFile, commentDirectives: CommentDirective[], flatDiagnostics: Diagnostic[]) {
+            // Diagnostics are only reported if there is no comment directive preceding them
+            // This will modify the directives map by marking "used" ones with a corresponding diagnostic
+            const directives = createCommentDirectivesMap(sourceFile, commentDirectives);
+            const diagnostics = flatDiagnostics.filter(diagnostic => markPrecedingCommentDirectiveLine(diagnostic, directives) === -1);
+      
+            return { diagnostics, directives };
+        }
+
+        function getSuggestionDiagnostics(sourceFile: SourceFile, cancellationToken: CancellationToken): readonly DiagnosticWithLocation[] {
+            return runWithCancellationToken(() => {
+                return getDiagnosticsProducingTypeChecker().getSuggestionDiagnostics(sourceFile, cancellationToken);
+            });
         }
 
         function getJSSyntacticDiagnosticsForFile(sourceFile: SourceFile): DiagnosticWithLocation[] {

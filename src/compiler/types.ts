@@ -2979,10 +2979,22 @@ namespace ts {
         /* @internal */ localJsxNamespace?: __String;
         /* @internal */ localJsxFactory?: EntityName;
 
-        // Comments comtaining @ts-expect-error directives, in order.
-        /* @internal */ errorExpectations?: TextRange[];
+        // Comments comtaining @ts-* directives, in order.
+        /* @internal */ commentDirectives?: CommentDirective[];
 
         /*@internal*/ exportedModulesFromDeclarationEmit?: ExportedModulesFromDeclarationEmit;
+    }
+
+    /* @internal */
+    export type CommentDirective = {
+        range: TextRange;
+        type: CommentDirectiveType,
+    }
+
+    /* @internal */
+    export enum CommentDirectiveType {
+        ExpectError,
+        Ignore,
     }
 
     /*@internal*/
@@ -6567,6 +6579,12 @@ namespace ts {
         set<TKey extends keyof PragmaPseudoMap>(key: TKey, value: PragmaPseudoMap[TKey] | PragmaPseudoMap[TKey][]): this;
         get<TKey extends keyof PragmaPseudoMap>(key: TKey): PragmaPseudoMap[TKey] | PragmaPseudoMap[TKey][];
         forEach(action: <TKey extends keyof PragmaPseudoMap>(value: PragmaPseudoMap[TKey] | PragmaPseudoMap[TKey][], key: TKey) => void): void;
+    }
+
+    /* @internal */
+    export interface CommentDirectivesMap {
+        getUnusedExpectations(): CommentDirective[];
+        markUsed(matchedLine: number): boolean;
     }
 
     export interface UserPreferences {
