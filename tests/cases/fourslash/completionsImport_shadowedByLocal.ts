@@ -1,5 +1,7 @@
 /// <reference path="fourslash.ts" />
 
+// @noLib: true
+
 // @Filename: /a.ts
 ////export const foo = 0;
 
@@ -7,7 +9,16 @@
 ////const foo = 1;
 ////fo/**/
 
-goTo.marker("");
-const options = { includeExternalModuleExports: true, sourceDisplay: undefined };
-verify.completionListContains("foo", "const foo: 1", "", "const", undefined, undefined, options);
-verify.not.completionListContains({ name: "foo", source: "/a" }, undefined, undefined, undefined, undefined, undefined, options);
+verify.completions({
+    marker: "",
+    exact: [
+        completion.globalThisEntry,
+        {
+            name: "foo",
+            text: "const foo: 1",
+        },
+        completion.undefinedVarEntry,
+        ...completion.statementKeywordsWithTypes
+    ],
+    preferences: { includeCompletionsForModuleExports: true },
+});

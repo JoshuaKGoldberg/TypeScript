@@ -105,7 +105,8 @@ function objectLiteral2() {
 }
 function objectLiteral3() {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, _b;
+        var _a;
+        var _b;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -158,7 +159,8 @@ function objectLiteral5() {
 }
 function objectLiteral6() {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, _b;
+        var _a;
+        var _b;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:

@@ -17,8 +17,9 @@ class StringIterator {
 >v : any
         }
     }
-    
+
     [Symbol.iterator]() {
+>[Symbol.iterator] : () => this
 >Symbol.iterator : symbol
 >Symbol : SymbolConstructor
 >iterator : symbol

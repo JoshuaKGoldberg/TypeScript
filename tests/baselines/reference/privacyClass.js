@@ -130,9 +130,12 @@ export class glo_C12_public extends glo_c_private implements  glo_i_private, glo
 //// [privacyClass.js]
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -140,6 +143,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
+exports.glo_C12_public = exports.glo_C11_public = exports.glo_C8_public = exports.glo_C7_public = exports.glo_C4_public = exports.glo_C3_public = exports.glo_c_public = exports.m1 = void 0;
 var m1;
 (function (m1) {
     var m1_c_public = /** @class */ (function () {

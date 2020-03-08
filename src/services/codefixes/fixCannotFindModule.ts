@@ -1,42 +1,57 @@
 /* @internal */
 namespace ts.codefix {
-    const fixId = "fixCannotFindModule";
-    const errorCodes = [Diagnostics.Could_not_find_a_declaration_file_for_module_0_1_implicitly_has_an_any_type.code];
+    const fixName = "fixCannotFindModule";
+    const fixIdInstallTypesPackage = "installTypesPackage";
+
+    const errorCodeCannotFindModule = Diagnostics.Cannot_find_module_0.code;
+    const errorCodes = [
+        errorCodeCannotFindModule,
+        Diagnostics.Could_not_find_a_declaration_file_for_module_0_1_implicitly_has_an_any_type.code,
+    ];
     registerCodeFix({
         errorCodes,
         getCodeActions: context => {
-            const codeAction = tryGetCodeActionForInstallPackageTypes(context.host, context.sourceFile.fileName, getModuleName(context.sourceFile, context.span.start));
-            return codeAction && [{ fixId, ...codeAction }];
+            const { host, sourceFile, span: { start } } = context;
+            const packageName = tryGetImportedPackageName(sourceFile, start);
+            if (packageName === undefined) return undefined;
+            const typesPackageName = getTypesPackageNameToInstall(packageName, host, context.errorCode);
+            return typesPackageName === undefined
+                ? []
+                : [createCodeFixAction(fixName, /*changes*/ [], [Diagnostics.Install_0, typesPackageName], fixIdInstallTypesPackage, Diagnostics.Install_all_missing_types_packages, getInstallCommand(sourceFile.fileName, typesPackageName))];
         },
-        fixIds: [fixId],
-        getAllCodeActions: context => codeFixAll(context, errorCodes, (_, diag, commands) => {
-            const pkg = getTypesPackageNameToInstall(context.host, getModuleName(diag.file, diag.start));
-            if (pkg) {
-                commands.push(getCommand(diag.file.fileName, pkg));
-            }
-        }),
+        fixIds: [fixIdInstallTypesPackage],
+        getAllCodeActions: context => {
+            return codeFixAll(context, errorCodes, (_changes, diag, commands) => {
+                const packageName = tryGetImportedPackageName(diag.file, diag.start);
+                if (packageName === undefined) return undefined;
+                switch (context.fixId) {
+                    case fixIdInstallTypesPackage: {
+                        const pkg = getTypesPackageNameToInstall(packageName, context.host, diag.code);
+                        if (pkg) {
+                            commands.push(getInstallCommand(diag.file.fileName, pkg));
+                        }
+                        break;
+                    }
+                    default:
+                        Debug.fail(`Bad fixId: ${context.fixId}`);
+                }
+            });
+        },
     });
 
-    function getModuleName(sourceFile: SourceFile, pos: number): string {
-        return cast(getTokenAtPosition(sourceFile, pos, /*includeJsDocComment*/ false), isStringLiteral).text;
-    }
-
-    function getCommand(fileName: string, packageName: string): InstallPackageAction {
+    function getInstallCommand(fileName: string, packageName: string): InstallPackageAction {
         return { type: "install package", file: fileName, packageName };
     }
 
-    function getTypesPackageNameToInstall(host: LanguageServiceHost, moduleName: string): string | undefined {
-        const { packageName } = getPackageName(moduleName);
-        // If !registry, registry not available yet, can't do anything.
-        return host.isKnownTypesPackageName(packageName) ? getTypesPackageName(packageName) : undefined;
+    function tryGetImportedPackageName(sourceFile: SourceFile, pos: number): string | undefined {
+        const moduleName = cast(getTokenAtPosition(sourceFile, pos), isStringLiteral).text;
+        const { packageName } = parsePackageName(moduleName);
+        return isExternalModuleNameRelative(packageName) ? undefined : packageName;
     }
 
-    export function tryGetCodeActionForInstallPackageTypes(host: LanguageServiceHost, fileName: string, moduleName: string): CodeAction | undefined {
-        const packageName = getTypesPackageNameToInstall(host, moduleName);
-        return packageName === undefined ? undefined : {
-            description: formatStringFromArgs(getLocaleSpecificMessage(Diagnostics.Install_0), [packageName]),
-            changes: [],
-            commands: [getCommand(fileName, packageName)],
-        };
+    function getTypesPackageNameToInstall(packageName: string, host: LanguageServiceHost, diagCode: number): string | undefined {
+        return diagCode === errorCodeCannotFindModule
+            ? (JsTyping.nodeCoreModules.has(packageName) ? "@types/node" : undefined)
+            : (host.isKnownTypesPackageName!(packageName) ? getTypesPackageName(packageName) : undefined); // TODO: GH#18217
     }
 }

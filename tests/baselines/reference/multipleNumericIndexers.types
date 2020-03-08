@@ -12,8 +12,6 @@ class C {
 }
 
 interface I {
->I : I<T>
-
     [x: number]: string;
 >x : number
 
@@ -41,7 +39,7 @@ var b: {
 >x : number
 
 } = { 1: '', "2": '' }
->{ 1: '', "2": '' } : { 1: string; "2": string; }
+>{ 1: '', "2": '' } : { 1: string; 2: string; }
 >1 : string
 >'' : ""
 >"2" : string
@@ -49,7 +47,6 @@ var b: {
 
 class C2<T> {
 >C2 : C2<T>
->T : T
 
     [x: number]: string;
 >x : number
@@ -59,9 +56,6 @@ class C2<T> {
 }
 
 interface I<T> {
->I : I<T>
->T : T
-
     [x: number]: string;
 >x : number
 

@@ -1,23 +1,13 @@
 /// <reference path='fourslash.ts'/>
 
 ////class Foo {
-////    public "[|{| "isWriteAccess": true, "isDefinition": true |}ss|]": any;
+////    [|public "[|{| "isDefinition": true, "contextRangeIndex": 0 |}ss|]": any;|]
 ////}
 ////
 ////var x: Foo;
 ////x.[|ss|];
 ////x["[|ss|]"];
-////x = { "[|{| "isWriteAccess": true, "isDefinition": true |}ss|]": 0 };
-////x = { [|{| "isWriteAccess": true, "isDefinition": true |}ss|]: 0 };
+////x = { [|"[|{| "isWriteAccess": true, "isDefinition": true, "contextRangeIndex": 4 |}ss|]": 0|] };
+////x = { [|[|{| "isWriteAccess": true, "isDefinition": true, "contextRangeIndex": 6 |}ss|]: 0|] };
 
-const ranges = test.ranges();
-const [r0, r1, r2, r3, r4] = ranges;
-verify.referenceGroups([r0, r1, r2], [{ definition: '(property) Foo["ss"]: any', ranges }]);
-verify.referenceGroups(r3, [
-    { definition: '(property) Foo["ss"]: any', ranges: [r0, r1, r2, r4] },
-    { definition: '(property) "ss": number', ranges: [r3] }
-]);
-verify.referenceGroups(r4, [
-    { definition: '(property) Foo["ss"]: any', ranges: [r0, r1, r2, r3] },
-    { definition: '(property) ss: number', ranges: [r4] }
-]);
+verify.singleReferenceGroup('(property) Foo["ss"]: any', "ss");

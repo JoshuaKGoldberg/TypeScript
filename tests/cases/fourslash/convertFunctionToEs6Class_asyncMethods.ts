@@ -2,26 +2,28 @@
 
 // @allowNonTsExtensions: true
 // @Filename: test123.js
+// @lib: es5
 ////export function /**/MyClass() {
 ////}
 ////MyClass.prototype.foo = async function() {
-////    await 2;
+////    await Promise.resolve();
 ////}
 ////MyClass.bar = async function() {
-////    await 3;
+////    await Promise.resolve();
 ////}
 
-verify.applicableRefactorAvailableAtMarker("");
-verify.fileAfterApplyingRefactorAtMarker("",
+verify.codeFix({
+    description: "Convert function to an ES2015 class",
+    newFileContent:
 `export class MyClass {
     constructor() {
     }
     async foo() {
-        await 2;
+        await Promise.resolve();
     }
     static async bar() {
-        await 3;
+        await Promise.resolve();
     }
 }
 `,
-'Convert to ES2015 class', 'convert');
+});

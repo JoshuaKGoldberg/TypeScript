@@ -16,8 +16,9 @@
 ////   return false;
 //// }
 
-verify.codeFixAll({
-  fixId: "correctQualifiedNameToIndexedAccessType",
+verify.codeFix({
+  index: 0,
+  description: ignoreInterpolations(ts.Diagnostics.Rewrite_as_the_indexed_access_type_0),
   newFileContent:
 `/**
  * @typedef Foo

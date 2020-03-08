@@ -15,6 +15,7 @@ export var bVal: b = b.Sunday;
 define(["require", "exports"], function (require, exports) {
     "use strict";
     exports.__esModule = true;
+    exports.bVal = exports.b = exports.a = void 0;
     var a;
     (function (a) {
         var weekend;
@@ -34,7 +35,7 @@ export declare module a {
     enum weekend {
         Friday = 0,
         Saturday = 1,
-        Sunday = 2,
+        Sunday = 2
     }
 }
 export import b = a.weekend;

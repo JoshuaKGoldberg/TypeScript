@@ -1,8 +1,6 @@
 /// <reference path='fourslash.ts' />
 
 ////abstract class A {
-////    private _a: string;
-////
 ////    abstract get a(): string;
 ////    abstract set a(newName: string);
 ////
@@ -17,8 +15,6 @@ verify.codeFix({
     description: "Implement interface 'A'",
     newFileContent:
 `abstract class A {
-    private _a: string;
-
     abstract get a(): string;
     abstract set a(newName: string);
 
@@ -28,8 +24,17 @@ verify.codeFix({
 }
 
 class C implements A {
-    a: string;
-    b: number;
-    c: string | number;
+    get a(): string {
+        throw new Error("Method not implemented.");
+    }
+    set a(newName: string) {
+        throw new Error("Method not implemented.");
+    }
+    get b(): number {
+        throw new Error("Method not implemented.");
+    }
+    set c(arg: string | number) {
+        throw new Error("Method not implemented.");
+    }
 }`,
 });

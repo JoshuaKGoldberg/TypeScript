@@ -41,6 +41,7 @@ let d = a.baz().b;
 //// [f1.js]
 "use strict";
 exports.__esModule = true;
+exports.A = void 0;
 var A = /** @class */ (function () {
     function A() {
     }
@@ -50,6 +51,7 @@ exports.A = A;
 //// [f2.js]
 "use strict";
 exports.__esModule = true;
+exports.B = void 0;
 var B = /** @class */ (function () {
     function B() {
     }
@@ -78,5 +80,25 @@ export declare class A {
 export declare class B {
     n: number;
 }
+//// [f3.d.ts]
+import { B } from "./f2";
+declare namespace N {
+    interface Ifc {
+        a: number;
+    }
+    interface Cls {
+        b: number;
+    }
+}
+import I = N.Ifc;
+import C = N.Cls;
+declare module "./f1" {
+    interface A {
+        foo(): B;
+        bar(): I;
+        baz(): C;
+    }
+}
+export {};
 //// [f4.d.ts]
 import "./f3";

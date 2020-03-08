@@ -196,262 +196,283 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var _a, _b, _c, _d;
+var _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0;
 function x(o, k) { }
 let i = 0;
 function foo() { return ++i + ""; }
 const fieldNameA = "fieldName1";
 const fieldNameB = "fieldName2";
 const fieldNameC = "fieldName3";
-class A {
-    constructor() {
-        this["property2"] = 2;
-        this[Symbol.iterator] = null;
-        this["property4"] = 2;
-        this[Symbol.match] = null;
-        this[_a] = null;
-        this[_b] = null;
+let A = /** @class */ (() => {
+    var _a, _b, _c, _d;
+    class A {
+        constructor() {
+            this["property2"] = 2;
+            this[Symbol.iterator] = null;
+            this["property4"] = 2;
+            this[Symbol.match] = null;
+            this[_b] = null;
+            this[_d] = null;
+        }
     }
-}
-foo(), _c = foo(), _a = foo(), _d = fieldNameB, _b = fieldNameC;
-__decorate([
-    x
-], A.prototype, "property", void 0);
-__decorate([
-    x
-], A.prototype, Symbol.toStringTag, void 0);
-__decorate([
-    x
-], A.prototype, "property2", void 0);
-__decorate([
-    x
-], A.prototype, Symbol.iterator, void 0);
-__decorate([
-    x
-], A.prototype, _c, void 0);
-__decorate([
-    x
-], A.prototype, _a, void 0);
-__decorate([
-    x
-], A.prototype, _d, void 0);
-__decorate([
-    x
-], A.prototype, _b, void 0);
-void (_e = class B {
+    foo(), _a = foo(), _b = foo(), _c = fieldNameB, _d = fieldNameC;
+    __decorate([
+        x
+    ], A.prototype, "property", void 0);
+    __decorate([
+        x
+    ], A.prototype, Symbol.toStringTag, void 0);
+    __decorate([
+        x
+    ], A.prototype, "property2", void 0);
+    __decorate([
+        x
+    ], A.prototype, Symbol.iterator, void 0);
+    __decorate([
+        x
+    ], A.prototype, _a, void 0);
+    __decorate([
+        x
+    ], A.prototype, _b, void 0);
+    __decorate([
+        x
+    ], A.prototype, _c, void 0);
+    __decorate([
+        x
+    ], A.prototype, _d, void 0);
+    return A;
+})();
+void (_a = class B {
         constructor() {
             this["property2"] = 2;
             this[Symbol.iterator] = null;
             this["property4"] = 2;
             this[Symbol.match] = null;
             this[_f] = null;
-            this[_g] = null;
+            this[_h] = null;
         }
     },
     foo(),
-    _h = foo(),
+    _e = foo(),
     _f = foo(),
-    _j = fieldNameB,
-    _g = fieldNameC,
-    _e);
-class C {
-    constructor() {
-        this["property2"] = 2;
-        this[Symbol.iterator] = null;
-        this["property4"] = 2;
-        this[Symbol.match] = null;
-        this[_k] = null;
-        this[_l] = null;
+    _g = fieldNameB,
+    _h = fieldNameC,
+    _a);
+let C = /** @class */ (() => {
+    var _a, _b, _c, _d;
+    class C {
+        constructor() {
+            this["property2"] = 2;
+            this[Symbol.iterator] = null;
+            this["property4"] = 2;
+            this[Symbol.match] = null;
+            this[_b] = null;
+            this[_d] = null;
+        }
+        [(foo(), _a = foo(), _b = foo(), _c = fieldNameB, _d = fieldNameC, "some" + "method")]() { }
     }
-    [foo(), _m = foo(), _k = foo(), _o = fieldNameB, _l = fieldNameC, "some" + "method"]() { }
-}
-__decorate([
-    x
-], C.prototype, "property", void 0);
-__decorate([
-    x
-], C.prototype, Symbol.toStringTag, void 0);
-__decorate([
-    x
-], C.prototype, "property2", void 0);
-__decorate([
-    x
-], C.prototype, Symbol.iterator, void 0);
-__decorate([
-    x
-], C.prototype, _m, void 0);
-__decorate([
-    x
-], C.prototype, _k, void 0);
-__decorate([
-    x
-], C.prototype, _o, void 0);
-__decorate([
-    x
-], C.prototype, _l, void 0);
+    __decorate([
+        x
+    ], C.prototype, "property", void 0);
+    __decorate([
+        x
+    ], C.prototype, Symbol.toStringTag, void 0);
+    __decorate([
+        x
+    ], C.prototype, "property2", void 0);
+    __decorate([
+        x
+    ], C.prototype, Symbol.iterator, void 0);
+    __decorate([
+        x
+    ], C.prototype, _a, void 0);
+    __decorate([
+        x
+    ], C.prototype, _b, void 0);
+    __decorate([
+        x
+    ], C.prototype, _c, void 0);
+    __decorate([
+        x
+    ], C.prototype, _d, void 0);
+    return C;
+})();
 void class D {
     constructor() {
         this["property2"] = 2;
         this[Symbol.iterator] = null;
         this["property4"] = 2;
         this[Symbol.match] = null;
-        this[_p] = null;
-        this[_q] = null;
+        this[_k] = null;
+        this[_m] = null;
     }
-    [foo(), _r = foo(), _p = foo(), _s = fieldNameB, _q = fieldNameC, "some" + "method"]() { }
+    [(foo(), _j = foo(), _k = foo(), _l = fieldNameB, _m = fieldNameC, "some" + "method")]() { }
 };
-class E {
-    constructor() {
-        this["property2"] = 2;
-        this[Symbol.iterator] = null;
-        this["property4"] = 2;
-        this[Symbol.match] = null;
-        this[_t] = null;
-        this[_u] = null;
-    }
-    [foo(), _v = foo(), _t = foo(), "some" + "method"]() { }
-}
-_w = fieldNameB, _u = fieldNameC;
-__decorate([
-    x
-], E.prototype, "property", void 0);
-__decorate([
-    x
-], E.prototype, Symbol.toStringTag, void 0);
-__decorate([
-    x
-], E.prototype, "property2", void 0);
-__decorate([
-    x
-], E.prototype, Symbol.iterator, void 0);
-__decorate([
-    x
-], E.prototype, _v, void 0);
-__decorate([
-    x
-], E.prototype, _t, void 0);
-__decorate([
-    x
-], E.prototype, _w, void 0);
-__decorate([
-    x
-], E.prototype, _u, void 0);
-void (_x = class F {
+let E = /** @class */ (() => {
+    var _a, _b, _c, _d;
+    class E {
         constructor() {
             this["property2"] = 2;
             this[Symbol.iterator] = null;
             this["property4"] = 2;
             this[Symbol.match] = null;
-            this[_y] = null;
-            this[_z] = null;
+            this[_b] = null;
+            this[_d] = null;
         }
-        [foo(), _0 = foo(), _y = foo(), "some" + "method"]() { }
-    },
-    _1 = fieldNameB,
-    _z = fieldNameC,
-    _x);
-class G {
-    constructor() {
-        this["property2"] = 2;
-        this[Symbol.iterator] = null;
-        this["property4"] = 2;
-        this[Symbol.match] = null;
-        this[_2] = null;
-        this[_3] = null;
+        [(foo(), _a = foo(), _b = foo(), "some" + "method")]() { }
     }
-    [foo(), _4 = foo(), _2 = foo(), "some" + "method"]() { }
-    [_5 = fieldNameB, "some" + "method2"]() { }
-}
-_3 = fieldNameC;
-__decorate([
-    x
-], G.prototype, "property", void 0);
-__decorate([
-    x
-], G.prototype, Symbol.toStringTag, void 0);
-__decorate([
-    x
-], G.prototype, "property2", void 0);
-__decorate([
-    x
-], G.prototype, Symbol.iterator, void 0);
-__decorate([
-    x
-], G.prototype, _4, void 0);
-__decorate([
-    x
-], G.prototype, _2, void 0);
-__decorate([
-    x
-], G.prototype, _5, void 0);
-__decorate([
-    x
-], G.prototype, _3, void 0);
-void (_6 = class H {
+    _c = fieldNameB, _d = fieldNameC;
+    __decorate([
+        x
+    ], E.prototype, "property", void 0);
+    __decorate([
+        x
+    ], E.prototype, Symbol.toStringTag, void 0);
+    __decorate([
+        x
+    ], E.prototype, "property2", void 0);
+    __decorate([
+        x
+    ], E.prototype, Symbol.iterator, void 0);
+    __decorate([
+        x
+    ], E.prototype, _a, void 0);
+    __decorate([
+        x
+    ], E.prototype, _b, void 0);
+    __decorate([
+        x
+    ], E.prototype, _c, void 0);
+    __decorate([
+        x
+    ], E.prototype, _d, void 0);
+    return E;
+})();
+void (_b = class F {
         constructor() {
             this["property2"] = 2;
             this[Symbol.iterator] = null;
             this["property4"] = 2;
             this[Symbol.match] = null;
-            this[_7] = null;
-            this[_8] = null;
+            this[_p] = null;
+            this[_r] = null;
         }
-        [foo(), _9 = foo(), _7 = foo(), "some" + "method"]() { }
-        [_10 = fieldNameB, "some" + "method2"]() { }
+        [(foo(), _o = foo(), _p = foo(), "some" + "method")]() { }
     },
-    _8 = fieldNameC,
-    _6);
-class I {
-    constructor() {
-        this["property2"] = 2;
-        this[Symbol.iterator] = null;
-        this["property4"] = 2;
-        this[Symbol.match] = null;
-        this[_11] = null;
-        this[_12] = null;
-    }
-    [foo(), _13 = foo(), _11 = foo(), _14 = "some" + "method"]() { }
-    [_15 = fieldNameB, "some" + "method2"]() { }
-}
-_12 = fieldNameC;
-__decorate([
-    x
-], I.prototype, "property", void 0);
-__decorate([
-    x
-], I.prototype, Symbol.toStringTag, void 0);
-__decorate([
-    x
-], I.prototype, "property2", void 0);
-__decorate([
-    x
-], I.prototype, Symbol.iterator, void 0);
-__decorate([
-    x
-], I.prototype, _13, void 0);
-__decorate([
-    x
-], I.prototype, _11, void 0);
-__decorate([
-    x
-], I.prototype, _14, null);
-__decorate([
-    x
-], I.prototype, _15, void 0);
-__decorate([
-    x
-], I.prototype, _12, void 0);
-void (_16 = class J {
+    _q = fieldNameB,
+    _r = fieldNameC,
+    _b);
+let G = /** @class */ (() => {
+    var _a, _b, _c, _d;
+    class G {
         constructor() {
             this["property2"] = 2;
             this[Symbol.iterator] = null;
             this["property4"] = 2;
             this[Symbol.match] = null;
-            this[_17] = null;
-            this[_18] = null;
+            this[_b] = null;
+            this[_d] = null;
         }
-        [foo(), _19 = foo(), _17 = foo(), _20 = "some" + "method"]() { }
-        [_21 = fieldNameB, "some" + "method2"]() { }
+        [(foo(), _a = foo(), _b = foo(), "some" + "method")]() { }
+        [(_c = fieldNameB, "some" + "method2")]() { }
+    }
+    _d = fieldNameC;
+    __decorate([
+        x
+    ], G.prototype, "property", void 0);
+    __decorate([
+        x
+    ], G.prototype, Symbol.toStringTag, void 0);
+    __decorate([
+        x
+    ], G.prototype, "property2", void 0);
+    __decorate([
+        x
+    ], G.prototype, Symbol.iterator, void 0);
+    __decorate([
+        x
+    ], G.prototype, _a, void 0);
+    __decorate([
+        x
+    ], G.prototype, _b, void 0);
+    __decorate([
+        x
+    ], G.prototype, _c, void 0);
+    __decorate([
+        x
+    ], G.prototype, _d, void 0);
+    return G;
+})();
+void (_c = class H {
+        constructor() {
+            this["property2"] = 2;
+            this[Symbol.iterator] = null;
+            this["property4"] = 2;
+            this[Symbol.match] = null;
+            this[_t] = null;
+            this[_v] = null;
+        }
+        [(foo(), _s = foo(), _t = foo(), "some" + "method")]() { }
+        [(_u = fieldNameB, "some" + "method2")]() { }
     },
-    _18 = fieldNameC,
-    _16);
-var _c, _a, _d, _b, _h, _f, _j, _g, _e, _m, _k, _o, _l, _r, _p, _s, _q, _v, _t, _w, _u, _0, _y, _1, _z, _x, _4, _2, _5, _3, _9, _7, _10, _8, _6, _13, _11, _14, _15, _12, _19, _17, _20, _21, _18, _16;
+    _v = fieldNameC,
+    _c);
+let I = /** @class */ (() => {
+    var _a, _b, _c, _d, _e;
+    class I {
+        constructor() {
+            this["property2"] = 2;
+            this[Symbol.iterator] = null;
+            this["property4"] = 2;
+            this[Symbol.match] = null;
+            this[_b] = null;
+            this[_e] = null;
+        }
+        [(foo(), _a = foo(), _b = foo(), _c = "some" + "method")]() { }
+        [(_d = fieldNameB, "some" + "method2")]() { }
+    }
+    _e = fieldNameC;
+    __decorate([
+        x
+    ], I.prototype, "property", void 0);
+    __decorate([
+        x
+    ], I.prototype, Symbol.toStringTag, void 0);
+    __decorate([
+        x
+    ], I.prototype, "property2", void 0);
+    __decorate([
+        x
+    ], I.prototype, Symbol.iterator, void 0);
+    __decorate([
+        x
+    ], I.prototype, _a, void 0);
+    __decorate([
+        x
+    ], I.prototype, _b, void 0);
+    __decorate([
+        x
+    ], I.prototype, _c, null);
+    __decorate([
+        x
+    ], I.prototype, _d, void 0);
+    __decorate([
+        x
+    ], I.prototype, _e, void 0);
+    return I;
+})();
+void (_d = class J {
+        constructor() {
+            this["property2"] = 2;
+            this[Symbol.iterator] = null;
+            this["property4"] = 2;
+            this[Symbol.match] = null;
+            this[_x] = null;
+            this[_0] = null;
+        }
+        [(foo(), _w = foo(), _x = foo(), _y = "some" + "method")]() { }
+        [(_z = fieldNameB, "some" + "method2")]() { }
+    },
+    _0 = fieldNameC,
+    _d);

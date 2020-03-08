@@ -5,6 +5,9 @@ f1(1,);
 
 function f2(...args,) {}
 
+// Allowed for ambient declarations
+declare function f25(...args,): void;
+
 f2(...[],);
 
 // Not confused by overloads
@@ -47,7 +50,7 @@ var X = /** @class */ (function () {
     Object.defineProperty(X.prototype, "x", {
         // See trailingCommasInGetter.ts
         set: function (value) { },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return X;

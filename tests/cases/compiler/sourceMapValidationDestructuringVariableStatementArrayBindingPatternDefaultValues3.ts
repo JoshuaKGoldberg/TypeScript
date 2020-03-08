@@ -1,3 +1,4 @@
+// @lib: es5
 // @sourcemap: true
 declare var console: {
     log(msg: any): void;
@@ -21,7 +22,7 @@ let multiRobotAInfo: (string | string[])[];
 [, nameB = "helloNoName"] = [2, "trimmer", "trimming"];
 [, multiSkillB = []] = multiRobotB;
 [, multiSkillB = []] = getMultiRobotB();
-[, multiSkillB = []] = ["roomba", ["vaccum", "mopping"]];
+[, multiSkillB = []] = ["roomba", ["vacuum", "mopping"]];
 
 [numberB = -1] = robotB;
 [numberB = -1] = getRobotB();

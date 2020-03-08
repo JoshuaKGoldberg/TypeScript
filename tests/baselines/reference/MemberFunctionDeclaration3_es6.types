@@ -3,5 +3,6 @@ class C {
 >C : C
 
    *[foo]() { }
+>[foo] : () => Generator<never, void, unknown>
 >foo : any
 }

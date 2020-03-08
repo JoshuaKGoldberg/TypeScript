@@ -3,13 +3,13 @@
 ////module FindRef4 {
 ////	module MixedStaticsClassTest {
 ////		export class Foo {
-////			[|{| "isWriteAccess": true, "isDefinition": true |}bar|]: Foo;
-////			static [|{| "isWriteAccess": true, "isDefinition": true |}bar|]: Foo;
+////			[|[|{| "isDefinition": true, "contextRangeIndex": 0 |}bar|]: Foo;|]
+////			[|static [|{| "isDefinition": true, "contextRangeIndex": 2 |}bar|]: Foo;|]
 ////
-////			public [|{| "isWriteAccess": true, "isDefinition": true |}foo|](): void {
-////			}
-////			public static [|{| "isWriteAccess": true, "isDefinition": true |}foo|](): void {
-////			}
+////			[|public [|{| "isWriteAccess": true, "isDefinition": true, "contextRangeIndex": 4 |}foo|](): void {
+////			}|]
+////			[|public static [|{| "isWriteAccess": true, "isDefinition": true, "contextRangeIndex": 6 |}foo|](): void {
+////			}|]
 ////		}
 ////	}
 ////
@@ -25,7 +25,7 @@
 ////	}
 ////}
 
-const [fooBar, fooStaticBar, fooFoo, fooStaticFoo, xFoo, xBar, staticFoo, staticBar] = test.ranges();
+const [fooBarDef, fooBar, fooStaticBarDef, fooStaticBar, fooFooDef, fooFoo, fooStaticFooDef, fooStaticFoo, xFoo, xBar, staticFoo, staticBar] = test.ranges();
 
 // References to a member method with the same name as a static.
 verify.singleReferenceGroup("(method) MixedStaticsClassTest.Foo.foo(): void", [fooFoo, xFoo]);
@@ -34,10 +34,7 @@ verify.singleReferenceGroup("(method) MixedStaticsClassTest.Foo.foo(): void", [f
 verify.singleReferenceGroup("(method) MixedStaticsClassTest.Foo.foo(): void", [fooStaticFoo, staticFoo]);
 
 // References to a member property with the same name as a static.
-//verify.singleReferenceGroup("(property) MixedStaticsClassTest.Foo.bar: Foo", [fooBar, xBar]);
-verify.referenceGroups(fooBar, [{ definition: "(property) MixedStaticsClassTest.Foo.bar: Foo", ranges: [fooBar, xBar] }]);
-verify.referenceGroups(xBar, [{ definition: "(property) MixedStaticsClassTest.Foo.bar: MixedStaticsClassTest.Foo", ranges: [fooBar, xBar] }]);
+verify.singleReferenceGroup("(property) MixedStaticsClassTest.Foo.bar: Foo", [fooBar, xBar]);
 
 // References to a static property with the same name as a member.
-verify.referenceGroups(fooStaticBar, [{ definition: "(property) MixedStaticsClassTest.Foo.bar: Foo", ranges: [fooStaticBar, staticBar] }]);
-verify.referenceGroups(staticBar, [{ definition: "(property) MixedStaticsClassTest.Foo.bar: MixedStaticsClassTest.Foo", ranges: [fooStaticBar, staticBar] }]);
+verify.singleReferenceGroup("(property) MixedStaticsClassTest.Foo.bar: Foo", [fooStaticBar, staticBar]);

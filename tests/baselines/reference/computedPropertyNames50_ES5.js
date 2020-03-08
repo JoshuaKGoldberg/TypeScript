@@ -25,6 +25,7 @@ var x = {
 }
 
 //// [computedPropertyNames50_ES5.js]
+var _a;
 var x = (_a = {
         p1: 10,
         get foo() {
@@ -37,7 +38,7 @@ var x = (_a = {
         get: function () {
             throw 10;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     }),
     Object.defineProperty(_a, 1 + 1, {
@@ -45,16 +46,15 @@ var x = (_a = {
             // just throw
             throw 10;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     }),
     Object.defineProperty(_a, 1 + 1, {
         get: function () {
             return 10;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     }),
     _a.p2 = 20,
     _a);
-var _a;

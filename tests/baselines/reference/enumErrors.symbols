@@ -18,7 +18,7 @@ enum E5 {
 
     C = new Number(30)
 >C : Symbol(E5.C, Decl(enumErrors.ts, 7, 9))
->Number : Symbol(Number, Decl(lib.d.ts, --, --), Decl(lib.d.ts, --, --), Decl(lib.d.ts, --, --))
+>Number : Symbol(Number, Decl(lib.es5.d.ts, --, --), Decl(lib.es5.d.ts, --, --), Decl(lib.es5.d.ts, --, --))
 }
 
 enum E9 {
@@ -59,10 +59,11 @@ enum E11 {
 
     B = new Date(),
 >B : Symbol(E11.B, Decl(enumErrors.ts, 25, 13))
->Date : Symbol(Date, Decl(lib.d.ts, --, --), Decl(lib.d.ts, --, --), Decl(lib.d.ts, --, --))
+>Date : Symbol(Date, Decl(lib.es5.d.ts, --, --), Decl(lib.es5.d.ts, --, --), Decl(lib.es5.d.ts, --, --), Decl(lib.scripthost.d.ts, --, --))
 
     C = window,
 >C : Symbol(E11.C, Decl(enumErrors.ts, 26, 19))
+>window : Symbol(window, Decl(lib.dom.d.ts, --, --))
 
     D = {}
 >D : Symbol(E11.D, Decl(enumErrors.ts, 27, 15))
@@ -77,10 +78,11 @@ enum E12 {
 
     B = new Date(),
 >B : Symbol(E12.B, Decl(enumErrors.ts, 33, 11))
->Date : Symbol(Date, Decl(lib.d.ts, --, --), Decl(lib.d.ts, --, --), Decl(lib.d.ts, --, --))
+>Date : Symbol(Date, Decl(lib.es5.d.ts, --, --), Decl(lib.es5.d.ts, --, --), Decl(lib.es5.d.ts, --, --), Decl(lib.scripthost.d.ts, --, --))
 
     C = window,
 >C : Symbol(E12.C, Decl(enumErrors.ts, 34, 19))
+>window : Symbol(window, Decl(lib.dom.d.ts, --, --))
 
     D = {},
 >D : Symbol(E12.D, Decl(enumErrors.ts, 35, 15))
@@ -88,4 +90,37 @@ enum E12 {
     E = 1 + 1,
 >E : Symbol(E12.E, Decl(enumErrors.ts, 36, 11))
 }
+
+// Enum with incorrect syntax
+enum E13 {
+>E13 : Symbol(E13, Decl(enumErrors.ts, 38, 1))
+
+    postComma,
+>postComma : Symbol(E13.postComma, Decl(enumErrors.ts, 41, 10))
+
+    postValueComma = 1,
+>postValueComma : Symbol(E13.postValueComma, Decl(enumErrors.ts, 42, 14))
+
+    postSemicolon;
+>postSemicolon : Symbol(E13.postSemicolon, Decl(enumErrors.ts, 43, 23))
+
+    postColonValueComma: 2,
+>postColonValueComma : Symbol(E13.postColonValueComma, Decl(enumErrors.ts, 45, 18))
+>2 : Symbol(E13[2], Decl(enumErrors.ts, 46, 24))
+
+    postColonValueSemicolon: 3;
+>postColonValueSemicolon : Symbol(E13.postColonValueSemicolon, Decl(enumErrors.ts, 46, 27))
+>3 : Symbol(E13[3], Decl(enumErrors.ts, 47, 28))
+
+};
+
+enum E14 { a, b: any "hello" += 1, c, d}
+>E14 : Symbol(E14, Decl(enumErrors.ts, 48, 2))
+>a : Symbol(E14.a, Decl(enumErrors.ts, 50, 10))
+>b : Symbol(E14.b, Decl(enumErrors.ts, 50, 13))
+>any : Symbol(E14.any, Decl(enumErrors.ts, 50, 16))
+>"hello" : Symbol(E14["hello"], Decl(enumErrors.ts, 50, 20))
+>1 : Symbol(E14[1], Decl(enumErrors.ts, 50, 31))
+>c : Symbol(E14.c, Decl(enumErrors.ts, 50, 34))
+>d : Symbol(E14.d, Decl(enumErrors.ts, 50, 37))
 

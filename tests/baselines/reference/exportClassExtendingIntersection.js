@@ -38,6 +38,7 @@ const AnotherMixedClass = MyMixin(MyExtendedClass);
 //// [BaseClass.js]
 "use strict";
 exports.__esModule = true;
+exports.MyBaseClass = void 0;
 var MyBaseClass = /** @class */ (function () {
     function MyBaseClass(value) {
     }
@@ -47,9 +48,12 @@ exports.MyBaseClass = MyBaseClass;
 //// [MixinClass.js]
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -57,6 +61,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
+exports.MyMixin = void 0;
 function MyMixin(base) {
     return /** @class */ (function (_super) {
         __extends(class_1, _super);
@@ -70,9 +75,12 @@ exports.MyMixin = MyMixin;
 //// [FinalClass.js]
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -80,6 +88,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
+exports.MyExtendedClass = void 0;
 var BaseClass_1 = require("./BaseClass");
 var MixinClass_1 = require("./MixinClass");
 var MyExtendedClass = /** @class */ (function (_super) {
@@ -114,9 +123,10 @@ export declare function MyMixin<T extends Constructor<MyBaseClass<any>>>(base: T
 //// [FinalClass.d.ts]
 import { MyBaseClass } from './BaseClass';
 import { MyMixin } from './MixinClass';
-declare const MyExtendedClass_base: typeof MyBaseClass & (new (...args: any[]) => MyMixin);
+declare const MyExtendedClass_base: typeof MyBaseClass & import("./BaseClass").Constructor<MyMixin>;
 export declare class MyExtendedClass extends MyExtendedClass_base<string> {
     extendedClassProperty: number;
 }
+export {};
 //// [Main.d.ts]
 export {};

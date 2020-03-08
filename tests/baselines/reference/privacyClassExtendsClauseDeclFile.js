@@ -99,9 +99,12 @@ class publicClassExtendingPublicClassInGlobal extends publicClassInGlobal {
 //// [privacyClassExtendsClauseDeclFile_externalModule.js]
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -109,6 +112,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
+exports.publicClassExtendingFromPrivateModuleClass = exports.publicClassExtendingPrivateClass = exports.publicClassExtendingPublicClass = exports.publicClass = exports.publicModule = void 0;
 var publicModule;
 (function (publicModule) {
     var publicClassInPublicModule = /** @class */ (function () {
@@ -291,9 +295,12 @@ var publicClassExtendingFromPrivateModuleClass = /** @class */ (function (_super
 exports.publicClassExtendingFromPrivateModuleClass = publicClassExtendingFromPrivateModuleClass;
 //// [privacyClassExtendsClauseDeclFile_GlobalFile.js]
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -358,3 +365,63 @@ var publicClassExtendingPublicClassInGlobal = /** @class */ (function (_super) {
     }
     return publicClassExtendingPublicClassInGlobal;
 }(publicClassInGlobal));
+
+
+//// [privacyClassExtendsClauseDeclFile_externalModule.d.ts]
+export declare module publicModule {
+    export class publicClassInPublicModule {
+        private f1;
+    }
+    class privateClassInPublicModule {
+    }
+    export class publicClassExtendingPublicClassInModule extends publicClassInPublicModule {
+    }
+    export class publicClassExtendingPrivateClassInModule extends privateClassInPublicModule {
+    }
+    export class publicClassExtendingFromPrivateModuleClass extends privateModule.publicClassInPrivateModule {
+    }
+    export {};
+}
+declare module privateModule {
+    export class publicClassInPrivateModule {
+        private f1;
+    }
+    class privateClassInPrivateModule {
+    }
+    export class publicClassExtendingPublicClassInModule extends publicClassInPrivateModule {
+    }
+    export class publicClassExtendingPrivateClassInModule extends privateClassInPrivateModule {
+    }
+    export class publicClassExtendingFromPrivateModuleClass extends privateModule.publicClassInPrivateModule {
+    }
+    export {};
+}
+export declare class publicClass {
+    private f1;
+}
+declare class privateClass {
+}
+export declare class publicClassExtendingPublicClass extends publicClass {
+}
+export declare class publicClassExtendingPrivateClass extends privateClass {
+}
+export declare class publicClassExtendingFromPrivateModuleClass extends privateModule.publicClassInPrivateModule {
+}
+export {};
+//// [privacyClassExtendsClauseDeclFile_GlobalFile.d.ts]
+declare module publicModuleInGlobal {
+    export class publicClassInPublicModule {
+        private f1;
+    }
+    class privateClassInPublicModule {
+    }
+    export class publicClassExtendingPublicClassInModule extends publicClassInPublicModule {
+    }
+    export class publicClassExtendingPrivateClassInModule extends privateClassInPublicModule {
+    }
+    export {};
+}
+declare class publicClassInGlobal {
+}
+declare class publicClassExtendingPublicClassInGlobal extends publicClassInGlobal {
+}

@@ -24,10 +24,11 @@ async function foo() {
 });
 //// [index.js]
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -38,8 +39,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
         while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
                 case 0: case 1: t = op; break;
                 case 4: _.label++; return { value: op[1], done: false };
@@ -72,12 +73,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function foo() {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
+                var _b;
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, __syncRequire ? Promise.resolve().then(function () { return require("./foo"); }) : new Promise(function (resolve_1, reject_1) { require(["./foo"], resolve_1, reject_1); })];
                     case 1: return [4 /*yield*/, (_b = (_a.sent()).default, __syncRequire ? Promise.resolve().then(function () { return require(_b); }) : new Promise(function (resolve_2, reject_2) { require([_b], resolve_2, reject_2); }))];
                     case 2: return [2 /*return*/, _a.sent()];
                 }
-                var _b;
             });
         });
     }

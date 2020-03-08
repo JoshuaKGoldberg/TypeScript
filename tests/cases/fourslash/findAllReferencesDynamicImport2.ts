@@ -1,12 +1,12 @@
 ﻿/// <reference path='fourslash.ts' />
 
 // @Filename: foo.ts
-//// export function [|bar|]() { return "bar"; }
+//// [|export function [|{| "isWriteAccess": true, "isDefinition": true, "contextRangeIndex": 0 |}bar|]() { return "bar"; }|]
 
 //// var x = import("./foo");
 //// x.then(foo => {
-////     foo.[|bar|](); 
+////     foo.[|bar|]();
 //// })
 
-verify.rangesReferenceEachOther();
-verify.rangesAreRenameLocations();
+verify.singleReferenceGroup("function bar(): string", "bar");
+verify.rangesWithSameTextAreRenameLocations("bar");

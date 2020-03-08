@@ -1,3 +1,4 @@
+// @lib: es5
 // @sourcemap: true
 declare var console: {
     log(msg: any): void;
@@ -21,10 +22,10 @@ function foo3([nameMA = "noName", [
 }
 
 foo1(robotA);
-foo1(["roomba", ["vaccum", "mopping"]]);
+foo1(["roomba", ["vacuum", "mopping"]]);
 
 foo2(robotA);
-foo2(["roomba", ["vaccum", "mopping"]]);
+foo2(["roomba", ["vacuum", "mopping"]]);
 
 foo3(robotA);
-foo3(["roomba", ["vaccum", "mopping"]]);
+foo3(["roomba", ["vacuum", "mopping"]]);

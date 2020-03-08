@@ -3,6 +3,7 @@ class C {
 >C : C
 
   *[Symbol.iterator]() {
+>[Symbol.iterator] : () => Generator<number, void, unknown>
 >Symbol.iterator : symbol
 >Symbol : SymbolConstructor
 >iterator : symbol

@@ -21,7 +21,7 @@ let multiRobotAInfo: (string | [string, string])[];
 [, nameB] = [2, "trimmer", "trimming"];
 [, multiSkillB] = multiRobotB;
 [, multiSkillB] = getMultiRobotB();
-[, multiSkillB] = ["roomba", ["vaccum", "mopping"]];
+[, multiSkillB] = ["roomba", ["vacuum", "mopping"]];
 
 [numberB] = robotB;
 [numberB] = getRobotB();
@@ -57,6 +57,7 @@ function getMultiRobotB() {
 }
 
 //// [sourceMapValidationDestructuringVariableStatementArrayBindingPattern3.js]
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
 var robotA = [1, "mower", "mowing"];
 var robotB = [2, "trimmer", "trimming"];
 var multiRobotA = ["mower", ["mowing", ""]];
@@ -70,7 +71,7 @@ _a = getRobotB(), nameB = _a[1];
 _b = [2, "trimmer", "trimming"], nameB = _b[1];
 multiSkillB = multiRobotB[1];
 _c = getMultiRobotB(), multiSkillB = _c[1];
-_d = ["roomba", ["vaccum", "mopping"]], multiSkillB = _d[1];
+_d = ["roomba", ["vacuum", "mopping"]], multiSkillB = _d[1];
 numberB = robotB[0];
 numberB = getRobotB()[0];
 numberB = [2, "trimmer", "trimming"][0];
@@ -98,5 +99,4 @@ function getRobotB() {
 function getMultiRobotB() {
     return multiRobotB;
 }
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
 //# sourceMappingURL=sourceMapValidationDestructuringVariableStatementArrayBindingPattern3.js.map

@@ -157,6 +157,7 @@ module privateModule {
 //// [privacyTypeParametersOfClassDeclFile.js]
 "use strict";
 exports.__esModule = true;
+exports.publicModule = exports.publicClassWithTypeParametersFromPrivateModule = exports.publicClassWithPublicTypeParametersWithoutExtends = exports.publicClassWithPublicTypeParameters = exports.publicClassWithPrivateTypeParameters = exports.publicClass = void 0;
 var privateClass = /** @class */ (function () {
     function privateClass() {
     }
@@ -383,3 +384,58 @@ var privateModule;
         return privateClassWithPublicTypeParametersWithoutExtends;
     }());
 })(privateModule || (privateModule = {}));
+
+
+//// [privacyTypeParametersOfClassDeclFile.d.ts]
+declare class privateClass {
+}
+export declare class publicClass {
+}
+export declare class publicClassWithPrivateTypeParameters<T extends privateClass> {
+    myMethod(val: T): T;
+}
+export declare class publicClassWithPublicTypeParameters<T extends publicClass> {
+    myMethod(val: T): T;
+}
+export declare class publicClassWithPublicTypeParametersWithoutExtends<T> {
+    myMethod(val: T): T;
+}
+export declare class publicClassWithTypeParametersFromPrivateModule<T extends privateModule.publicClassInPrivateModule> {
+    myMethod(val: T): T;
+}
+export declare module publicModule {
+    class privateClassInPublicModule {
+    }
+    export class publicClassInPublicModule {
+    }
+    export class publicClassWithPrivateTypeParameters<T extends privateClassInPublicModule> {
+        myMethod(val: T): T;
+    }
+    export class publicClassWithPublicTypeParameters<T extends publicClassInPublicModule> {
+        myMethod(val: T): T;
+    }
+    export class publicClassWithPublicTypeParametersWithoutExtends<T> {
+        myMethod(val: T): T;
+    }
+    export class publicClassWithTypeParametersFromPrivateModule<T extends privateModule.publicClassInPrivateModule> {
+        myMethod(val: T): T;
+    }
+    export {};
+}
+declare module privateModule {
+    class privateClassInPrivateModule {
+    }
+    export class publicClassInPrivateModule {
+    }
+    export class publicClassWithPrivateTypeParameters<T extends privateClassInPrivateModule> {
+        myMethod(val: T): T;
+    }
+    export class publicClassWithPublicTypeParameters<T extends publicClassInPrivateModule> {
+        myMethod(val: T): T;
+    }
+    export class publicClassWithPublicTypeParametersWithoutExtends<T> {
+        myMethod(val: T): T;
+    }
+    export {};
+}
+export {};

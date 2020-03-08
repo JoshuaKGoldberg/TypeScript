@@ -20,6 +20,7 @@ let y = x.getA().x;
 //// [f1.js]
 "use strict";
 exports.__esModule = true;
+exports.A = void 0;
 var A = /** @class */ (function () {
     function A() {
     }
@@ -39,7 +40,7 @@ export declare class A {
 }
 //// [f2.d.ts]
 import { A } from "./f1";
-declare global  {
+declare global {
     interface Array<T> {
         getA(): A;
     }

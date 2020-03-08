@@ -8,17 +8,17 @@ namespace ts.codefix {
             const { sourceFile, span } = context;
             const ctr = getNode(sourceFile, span.start);
             const changes = textChanges.ChangeTracker.with(context, t => doChange(t, sourceFile, ctr));
-            return [{ description: getLocaleSpecificMessage(Diagnostics.Add_missing_super_call), changes, fixId }];
+            return [createCodeFixAction(fixId, changes, Diagnostics.Add_missing_super_call, fixId, Diagnostics.Add_all_missing_super_calls)];
         },
         fixIds: [fixId],
         getAllCodeActions: context => codeFixAll(context, errorCodes, (changes, diag) =>
-            doChange(changes, context.sourceFile, getNode(diag.file, diag.start!))),
+            doChange(changes, context.sourceFile, getNode(diag.file, diag.start))),
     });
 
     function getNode(sourceFile: SourceFile, pos: number): ConstructorDeclaration {
-        const token = getTokenAtPosition(sourceFile, pos, /*includeJsDocComment*/ false);
-        Debug.assert(token.kind === SyntaxKind.ConstructorKeyword);
-        return token.parent as ConstructorDeclaration;
+        const token = getTokenAtPosition(sourceFile, pos);
+        Debug.assert(isConstructorDeclaration(token.parent), "token should be at the constructor declaration");
+        return token.parent;
     }
 
     function doChange(changes: textChanges.ChangeTracker, sourceFile: SourceFile, ctr: ConstructorDeclaration) {

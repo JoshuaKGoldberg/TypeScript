@@ -1,19 +1,16 @@
 /// <reference path='fourslash.ts' />
-////interface [|{| "isWriteAccess": true, "isDefinition": true |}Numbers|] {
+////[|interface [|{| "isWriteAccess": true, "isDefinition": true, "contextRangeIndex": 0 |}Numbers|] {
 ////    p: number;
-////}
-////interface [|{| "isWriteAccess": true, "isDefinition": true |}Numbers|] {
+////}|]
+////[|interface [|{| "isWriteAccess": true, "isDefinition": true, "contextRangeIndex": 2 |}Numbers|] {
 ////    m: number;
-////}
-////class [|{| "isWriteAccess": true, "isDefinition": true |}Numbers|] {
+////}|]
+////[|class [|{| "isWriteAccess": true, "isDefinition": true, "contextRangeIndex": 4 |}Numbers|] {
 ////    f(n: number) {
 ////        return this.p + this.m + n;
 ////    }
-////}
+////}|]
 ////let i: [|Numbers|] = new [|Numbers|]();
 ////let x = i.f(i.p + i.m);
 
-const ranges = test.ranges();
-const [r0, r1, r2, r3, r4] = ranges;
-verify.referenceGroups([r0, r1, r2, r3], [{ definition: "class Numbers\ninterface Numbers", ranges }]);
-verify.referenceGroups(r4, [{ definition: "constructor Numbers(): Numbers", ranges }]);
+verify.singleReferenceGroup("class Numbers\ninterface Numbers", "Numbers");

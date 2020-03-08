@@ -6,7 +6,6 @@ class c {
 
 //// [b.ts]
 /// <reference path="c.js"/>
-// error on above reference when emitting declarations
 function foo() {
 }
 
@@ -23,7 +22,6 @@ var c = /** @class */ (function () {
 function bar() {
 }
 /// <reference path="c.js"/>
-// error on above reference when emitting declarations
 function foo() {
 }
 
@@ -31,4 +29,5 @@ function foo() {
 //// [out.d.ts]
 declare class c {
 }
+declare function bar(): void;
 declare function foo(): void;

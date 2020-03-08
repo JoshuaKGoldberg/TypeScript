@@ -347,6 +347,7 @@ export var tests: TestRunner = (function () {
 //// [duplicateLocalVariable1.js]
 "use strict";
 exports.__esModule = true;
+exports.tests = exports.TestRunner = exports.TestCase = void 0;
 / /;
 commonjs;
 var TestFileDir = ".\\TempTestFiles";
@@ -382,7 +383,7 @@ var TestRunner = /** @class */ (function () {
                 exception = true;
                 testResult = false;
                 if (typeof testcase.errorMessageRegEx === "string") {
-                    if (testcase.errorMessageRegEx === "") {
+                    if (testcase.errorMessageRegEx === "") { // Any error is fine
                         testResult = true;
                     }
                     else if (e.message) {

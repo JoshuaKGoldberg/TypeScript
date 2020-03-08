@@ -13,7 +13,7 @@ class Foo { // error
 }
 
 function Foo(); // error
->Foo : () => any
+>Foo : typeof Foo
 
 function F1(s:string);
 >F1 : (s: string) => any

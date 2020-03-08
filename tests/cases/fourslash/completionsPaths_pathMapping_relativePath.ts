@@ -7,7 +7,7 @@
 ////export const x = 0;
 
 // @Filename: /x/a.ts
-////import { } from "foo/[|/**/|]";
+////import { } from "foo//**/";
 
 // @Filename: /x/tsconfig.json
 ////{
@@ -19,5 +19,8 @@
 ////    }
 ////}
 
-const [replacementSpan] = test.ranges();
-verify.completionsAt("", ["a", "b"].map(name => ({ name, replacementSpan })));
+verify.completions({
+    marker: "",
+    exact: ["a", "b"].map(name => ({ name, kind: "script", kindModifiers: ".ts" })),
+    isNewIdentifierLocation: true,
+});

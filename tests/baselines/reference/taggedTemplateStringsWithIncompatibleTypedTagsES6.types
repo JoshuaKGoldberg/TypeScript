@@ -1,24 +1,17 @@
 === tests/cases/conformance/es6/templates/taggedTemplateStringsWithIncompatibleTypedTagsES6.ts ===
 interface I {
->I : I
-
     (stringParts: TemplateStringsArray, ...rest: boolean[]): I;
 >stringParts : TemplateStringsArray
->TemplateStringsArray : TemplateStringsArray
 >rest : boolean[]
->I : I
 
     g: I;
 >g : I
->I : I
 
     h: I;
 >h : I
->I : I
 
     member: I;
 >member : I
->I : I
 
     thisIsNotATag(x: string): void
 >thisIsNotATag : (x: string) => void
@@ -26,12 +19,10 @@ interface I {
 
     [x: number]: I;
 >x : number
->I : I
 }
 
 var f: I;
 >f : I
->I : I
 
 f `abc`
 >f `abc` : I
@@ -39,7 +30,7 @@ f `abc`
 >`abc` : "abc"
 
 f `abc${1}def${2}ghi`;
->f `abc${1}def${2}ghi` : any
+>f `abc${1}def${2}ghi` : I
 >f : I
 >`abc${1}def${2}ghi` : string
 >1 : 1
@@ -53,13 +44,13 @@ f `abc`.member
 >member : I
 
 f `abc${1}def${2}ghi`.member;
->f `abc${1}def${2}ghi`.member : any
->f `abc${1}def${2}ghi` : any
+>f `abc${1}def${2}ghi`.member : I
+>f `abc${1}def${2}ghi` : I
 >f : I
 >`abc${1}def${2}ghi` : string
 >1 : 1
 >2 : 2
->member : any
+>member : I
 
 f `abc`["member"];
 >f `abc`["member"] : I
@@ -69,8 +60,8 @@ f `abc`["member"];
 >"member" : "member"
 
 f `abc${1}def${2}ghi`["member"];
->f `abc${1}def${2}ghi`["member"] : any
->f `abc${1}def${2}ghi` : any
+>f `abc${1}def${2}ghi`["member"] : I
+>f `abc${1}def${2}ghi` : I
 >f : I
 >`abc${1}def${2}ghi` : string
 >1 : 1
@@ -78,7 +69,7 @@ f `abc${1}def${2}ghi`["member"];
 >"member" : "member"
 
 f `abc`[0].member `abc${1}def${2}ghi`;
->f `abc`[0].member `abc${1}def${2}ghi` : any
+>f `abc`[0].member `abc${1}def${2}ghi` : I
 >f `abc`[0].member : I
 >f `abc`[0] : I
 >f `abc` : I
@@ -91,22 +82,22 @@ f `abc`[0].member `abc${1}def${2}ghi`;
 >2 : 2
 
 f `abc${1}def${2}ghi`["member"].member `abc${1}def${2}ghi`;
->f `abc${1}def${2}ghi`["member"].member `abc${1}def${2}ghi` : any
->f `abc${1}def${2}ghi`["member"].member : any
->f `abc${1}def${2}ghi`["member"] : any
->f `abc${1}def${2}ghi` : any
+>f `abc${1}def${2}ghi`["member"].member `abc${1}def${2}ghi` : I
+>f `abc${1}def${2}ghi`["member"].member : I
+>f `abc${1}def${2}ghi`["member"] : I
+>f `abc${1}def${2}ghi` : I
 >f : I
 >`abc${1}def${2}ghi` : string
 >1 : 1
 >2 : 2
 >"member" : "member"
->member : any
+>member : I
 >`abc${1}def${2}ghi` : string
 >1 : 1
 >2 : 2
 
 f `abc${ true }def${ true }ghi`["member"].member `abc${ 1 }def${ 2 }ghi`;
->f `abc${ true }def${ true }ghi`["member"].member `abc${ 1 }def${ 2 }ghi` : any
+>f `abc${ true }def${ true }ghi`["member"].member `abc${ 1 }def${ 2 }ghi` : I
 >f `abc${ true }def${ true }ghi`["member"].member : I
 >f `abc${ true }def${ true }ghi`["member"] : I
 >f `abc${ true }def${ true }ghi` : I

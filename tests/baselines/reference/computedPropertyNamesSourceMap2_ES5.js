@@ -9,6 +9,7 @@ var v = {
 }
 
 //// [computedPropertyNamesSourceMap2_ES5.js]
+var _a;
 var v = (_a = {},
     _a["hello"] = function () {
         debugger;
@@ -17,9 +18,8 @@ var v = (_a = {},
         get: function () {
             return 0;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     }),
     _a);
-var _a;
 //# sourceMappingURL=computedPropertyNamesSourceMap2_ES5.js.map

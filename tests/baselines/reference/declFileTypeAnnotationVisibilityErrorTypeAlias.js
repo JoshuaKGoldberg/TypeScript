@@ -87,3 +87,40 @@ var M2;
         m3.public1 = public1;
     })(m3 || (m3 = {}));
 })(M2 || (M2 = {}));
+
+
+//// [declFileTypeAnnotationVisibilityErrorTypeAlias.d.ts]
+interface Window {
+    someMethod(): any;
+}
+declare module M {
+    type W = Window | string;
+    export module N {
+        class Window {
+        }
+        var p: W;
+    }
+    export {};
+}
+declare module M1 {
+    type W = Window | string;
+    module N {
+        class Window {
+        }
+        var p: W;
+    }
+}
+declare module M2 {
+    class private1 {
+    }
+    class public1 {
+    }
+    module m3 {
+        class public1 {
+        }
+    }
+    export type t2 = private1;
+    export type t12 = public1;
+    export type t112 = m3.public1;
+    export {};
+}

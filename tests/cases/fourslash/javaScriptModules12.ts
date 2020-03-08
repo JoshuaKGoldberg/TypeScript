@@ -12,7 +12,7 @@
 //// var y;
 //// if(true) {
 ////     y = require('fs');
-//// } 
+//// }
 //// /*2*/
 
 // @Filename: glob1.js
@@ -26,32 +26,46 @@
 // @Filename: consumer.js
 //// /*5*/
 
-goTo.marker('1');
-verify.completionListContains('x');
-verify.not.completionListContains('y');
-verify.completionListContains('a');
-verify.completionListContains('b');
-
-goTo.marker('2');
-verify.not.completionListContains('x');
-verify.completionListContains('y');
-verify.completionListContains('a');
-verify.completionListContains('b');
-
-goTo.marker('3');
-verify.not.completionListContains('x');
-verify.not.completionListContains('y');
-verify.completionListContains('a');
-verify.completionListContains('b');
-
-goTo.marker('4');
-verify.not.completionListContains('x');
-verify.not.completionListContains('y');
-verify.completionListContains('a');
-verify.completionListContains('b');
-
-goTo.marker('5');
-verify.not.completionListContains('x');
-verify.not.completionListContains('y');
-verify.completionListContains('a');
-verify.completionListContains('b');
+verify.completions(
+    {
+        marker: "1",
+        includes: [
+            "x",
+            { name: "a", sortText: completion.SortText.GlobalsOrKeywords },
+            { name: "b", sortText: completion.SortText.GlobalsOrKeywords }
+        ], excludes: "y"
+    },
+    {
+        marker: "2",
+        includes: [
+            "y",
+            { name: "a", sortText: completion.SortText.GlobalsOrKeywords },
+            { name: "b", sortText: completion.SortText.GlobalsOrKeywords }
+        ],
+        excludes: "x"
+    },
+    {
+        marker: "3",
+        includes: [
+            "a",
+            { name: "b", sortText: completion.SortText.GlobalsOrKeywords }
+        ],
+        excludes: ["x", "y"]
+    },
+    {
+        marker: "4",
+        includes: [
+            { name: "a", sortText: completion.SortText.GlobalsOrKeywords },
+            "b"
+        ],
+        excludes: ["x", "y"]
+    },
+    {
+        marker: ["5"],
+        includes: [
+            { name: "a", sortText: completion.SortText.GlobalsOrKeywords },
+            { name: "b", sortText: completion.SortText.GlobalsOrKeywords }
+        ],
+        excludes: ["x", "y"]
+    },
+);

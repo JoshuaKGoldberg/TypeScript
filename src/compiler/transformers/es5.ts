@@ -1,6 +1,3 @@
-/// <reference path="../factory.ts" />
-/// <reference path="../visitor.ts" />
-
 /*@internal*/
 namespace ts {
     /**
@@ -27,7 +24,7 @@ namespace ts {
         context.onSubstituteNode = onSubstituteNode;
         context.enableSubstitution(SyntaxKind.PropertyAccessExpression);
         context.enableSubstitution(SyntaxKind.PropertyAssignment);
-        return transformSourceFile;
+        return chainBundle(transformSourceFile);
 
         /**
          * Transforms an ES5 source file to ES3.
@@ -85,6 +82,9 @@ namespace ts {
          * @param node A PropertyAccessExpression
          */
         function substitutePropertyAccessExpression(node: PropertyAccessExpression): Expression {
+            if (isPrivateIdentifier(node.name)) {
+                return node;
+            }
             const literalName = trySubstituteReservedName(node.name);
             if (literalName) {
                 return setTextRange(createElementAccess(node.expression, literalName), node);
@@ -112,7 +112,7 @@ namespace ts {
          */
         function trySubstituteReservedName(name: Identifier) {
             const token = name.originalKeywordKind || (nodeIsSynthesized(name) ? stringToToken(idText(name)) : undefined);
-            if (token >= SyntaxKind.FirstReservedWord && token <= SyntaxKind.LastReservedWord) {
+            if (token !== undefined && token >= SyntaxKind.FirstReservedWord && token <= SyntaxKind.LastReservedWord) {
                 return setTextRange(createLiteral(name), name);
             }
             return undefined;

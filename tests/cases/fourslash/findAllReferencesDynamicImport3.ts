@@ -1,13 +1,14 @@
 /// <reference path='fourslash.ts' />
 
 // @Filename: foo.ts
-//// export function [|bar|]() { return "bar"; }
+////[|export function [|{| "isWriteAccess": true, "isDefinition": true, "contextRangeIndex": 0 |}bar|]() { return "bar"; }|]
+////import('./foo').then(([|{ [|{| "isWriteAccess": true, "isDefinition": true, "contextRangeIndex": 2 |}bar|] }|]) => undefined);
 
-//// import('./foo').then(({ [|bar|] }) => undefined);
-
-const [r0, r1]  = test.ranges();
-// This is because bindingElement at r1 are both name and value
-verify.referencesOf(r0, [r1, r0, r1, r0]);
-verify.referencesOf(r1, [r0, r1, r1, r0]);
-verify.renameLocations(r0, [r0, r1]);
-verify.renameLocations(r1, [r1, r0, r0, r1]);
+const [r0Def, r0, r1Def, r1]  = test.ranges();
+verify.referenceGroups(r0, [{ definition: "function bar(): string", ranges: [r0, r1] }]);
+verify.referenceGroups(r1, [
+    { definition: "function bar(): string", ranges: [r0] },
+    { definition: "var bar: () => string", ranges: [r1] },
+]);
+verify.renameLocations(r0, [r0, { range: r1, suffixText: ": bar" }]);
+verify.renameLocations(r1, [{ range: r1, prefixText: "bar: " }])

@@ -13,7 +13,7 @@ class Foo { // error
 }
 
 function Foo(); // error
->Foo : () => any
+>Foo : typeof Foo
 
 function F1(s:string) {return s;} // error
 >F1 : (s: string) => string
@@ -32,7 +32,6 @@ function Goo(s:string); // error - no implementation
 declare function Gar(s:String); // expect no error
 >Gar : (s: String) => any
 >s : String
->String : String
 
 var f1 = new Foo("hey");
 >f1 : Foo

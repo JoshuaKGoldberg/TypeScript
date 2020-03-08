@@ -13,14 +13,22 @@
 /////*1*/
 ////file2Identifier2./*2*/
 
-goTo.marker("1");
-verify.completionListContains("file2Identifier1");
-verify.completionListContains("file2Identifier2");
-verify.completionListContains("file1Identifier");
-verify.not.completionListContains("FooProp");
-
-goTo.marker("2");
-verify.completionListContains("file2Identifier1");
-verify.completionListContains("file2Identifier2");
-verify.not.completionListContains("file1Identifier")
-verify.not.completionListContains("FooProp");
+verify.completions(
+    {
+        marker: "1",
+        includes: [
+            "file2Identifier1",
+            "file2Identifier2",
+            { name: "file1Identifier", sortText: completion.SortText.GlobalsOrKeywords }
+        ],
+        excludes: "FooProp"
+    },
+    {
+        marker: "2",
+        includes: [
+            { name: "file2Identifier1", sortText: completion.SortText.JavascriptIdentifiers },
+            { name: "file2Identifier2", sortText: completion.SortText.JavascriptIdentifiers }
+        ],
+        excludes: ["file1Identifier", "FooProp"]
+    },
+);

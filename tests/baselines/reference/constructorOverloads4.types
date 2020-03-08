@@ -9,13 +9,12 @@ declare module M {
 >args : string[]
     }
     export function Function(...args: any[]): any;
->Function : (...args: any[]) => any
+>Function : typeof Function
 >args : any[]
 
     export function Function(...args: string[]): Function;
->Function : (...args: string[]) => Function
+>Function : typeof Function
 >args : string[]
->Function : Function
 }
 
 

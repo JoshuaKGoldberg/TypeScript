@@ -5,11 +5,20 @@
 ////[].map<numb/*b*/;
 ////1 < Infini/*c*/;
 
-for (const marker of ["a", "b"]) {
-    goTo.marker(marker);
-    verify.completionListContains("number");
-    verify.not.completionListContains("SVGNumber");
-};
-
-goTo.marker("c");
-verify.completionListContains("Infinity");
+verify.completions(
+    {
+    marker: ["a", "b"],
+    includes: {
+        name: "number",
+        sortText: completion.SortText.GlobalsOrKeywords
+    },
+    excludes: "SVGNumber"
+    },
+    {
+        marker: "c",
+        includes: {
+            name: "Infinity",
+            sortText: completion.SortText.GlobalsOrKeywords
+        }
+    },
+);

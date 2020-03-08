@@ -3,138 +3,161 @@ export default {
 >{    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,    ['foo'+'']: 42,} : { [x: string]: number; }
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
 >42 : 42
 
     ['foo'+'']: 42,
+>['foo'+''] : number
 >'foo'+'' : string
 >'foo' : "foo"
 >'' : ""
@@ -144,9 +167,10 @@ export default {
 
 === tests/cases/compiler/comma.ts ===
 export default {
->{    ['foo']: 42} : { ['foo']: number; }
+>{    ['foo']: 42} : { foo: number; }
 
     ['foo']: 42
+>['foo'] : number
 >'foo' : "foo"
 >42 : 42
 
