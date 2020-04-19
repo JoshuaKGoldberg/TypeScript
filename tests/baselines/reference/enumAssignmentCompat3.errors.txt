@@ -9,7 +9,7 @@ tests/cases/compiler/enumAssignmentCompat3.ts(75,1): error TS2322: Type 'First.E
 tests/cases/compiler/enumAssignmentCompat3.ts(76,1): error TS2322: Type 'First.E' is not assignable to type 'Cd.E'.
   Property 'a' is missing in type 'Cd.E'.
 tests/cases/compiler/enumAssignmentCompat3.ts(77,1): error TS2322: Type 'E' is not assignable to type 'Nope'.
-tests/cases/compiler/enumAssignmentCompat3.ts(78,1): error TS2322: Type 'First.E' is not assignable to type 'Decl.E'.
+tests/cases/compiler/enumAssignmentCompat3.ts(78,1): error TS2322: Type 'First.E' is not assignable to type 'E'.
 tests/cases/compiler/enumAssignmentCompat3.ts(82,1): error TS2322: Type 'Const.E' is not assignable to type 'First.E'.
 tests/cases/compiler/enumAssignmentCompat3.ts(83,1): error TS2322: Type 'First.E' is not assignable to type 'Const.E'.
 tests/cases/compiler/enumAssignmentCompat3.ts(86,1): error TS2322: Type 'Merged.E' is not assignable to type 'First.E'.
@@ -114,7 +114,7 @@ tests/cases/compiler/enumAssignmentCompat3.ts(86,1): error TS2322: Type 'Merged.
 !!! error TS2322: Type 'E' is not assignable to type 'Nope'.
     decl = abc; // ok
     ~~~~
-!!! error TS2322: Type 'First.E' is not assignable to type 'Decl.E'.
+!!! error TS2322: Type 'First.E' is not assignable to type 'E'.
     
     // const is only assignable to itself
     k = k;
