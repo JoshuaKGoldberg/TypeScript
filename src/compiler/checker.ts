@@ -17792,11 +17792,14 @@ namespace ts {
             return checkTypeRelatedTo(source, target, comparableRelation, errorNode, headMessage, containingMessageChain);
         }
 
-        function isSignatureAssignableTo(source: Signature,
+        function isSignatureAssignableTo(
+            source: Signature,
             target: Signature,
-            ignoreReturnTypes: boolean): boolean {
-            return compareSignaturesRelated(source, target, ignoreReturnTypes ? SignatureCheckMode.IgnoreReturnTypes : 0, /*reportErrors*/ false,
-                /*errorReporter*/ undefined, /*errorReporter*/ undefined, compareTypesAssignable, /*reportUnreliableMarkers*/ undefined) !== Ternary.False;
+            ignoreReturnTypes: boolean,
+            errorReporter: ErrorReporter
+        ): boolean {
+            return compareSignaturesRelated(source, target, ignoreReturnTypes ? SignatureCheckMode.IgnoreReturnTypes : 0, /*reportErrors*/ true,
+                errorReporter, /*incompatibleErrorReporter*/ undefined, compareTypesAssignable, /*reportUnreliableMarkers*/ undefined) !== Ternary.False;
         }
 
         type ErrorReporter = (message: DiagnosticMessage, arg0?: string, arg1?: string) => void;
@@ -17985,21 +17988,28 @@ namespace ts {
             return related;
         }
 
-        function isImplementationCompatibleWithOverload(implementation: Signature, overload: Signature): boolean {
+        type ErrorReport = [DiagnosticMessage, string?, string?];
+
+        function isImplementationCompatibleWithOverload(implementation: Signature, overload: Signature): ErrorReport | undefined {
             const erasedSource = getErasedSignature(implementation);
             const erasedTarget = getErasedSignature(overload);
 
             // First see if the return types are compatible in either direction.
             const sourceReturnType = getReturnTypeOfSignature(erasedSource);
             const targetReturnType = getReturnTypeOfSignature(erasedTarget);
-            if (targetReturnType === voidType
-                || isTypeRelatedTo(targetReturnType, sourceReturnType, assignableRelation)
-                || isTypeRelatedTo(sourceReturnType, targetReturnType, assignableRelation)) {
-
-                return isSignatureAssignableTo(erasedSource, erasedTarget, /*ignoreReturnTypes*/ true);
+            if (targetReturnType !== voidType
+                && !isTypeRelatedTo(targetReturnType, sourceReturnType, assignableRelation)
+                && !isTypeRelatedTo(sourceReturnType, targetReturnType, assignableRelation)
+            ) {
+                return [Diagnostics.Overload_return_type_0_is_not_assignable_to_implementation_return_type_1, typeToString(sourceReturnType), typeToString(targetReturnType)];
             }
 
-            return false;
+            // If they are, then we check signature assignability
+            let report: ErrorReport | undefined;
+
+            isSignatureAssignableTo(erasedSource, erasedTarget, /*ignoreReturnTypes*/ true, (...receivedReport) => report = receivedReport);
+
+            return report!;
         }
 
         function isEmptyResolvedType(t: ResolvedType) {
@@ -35860,10 +35870,12 @@ namespace ts {
                     const signatures = getSignaturesOfSymbol(symbol);
                     const bodySignature = getSignatureFromDeclaration(bodyDeclaration);
                     for (const signature of signatures) {
-                        if (!isImplementationCompatibleWithOverload(bodySignature, signature)) {
+                        const compatibilityReport = isImplementationCompatibleWithOverload(bodySignature, signature);
+                        if (compatibilityReport) {
                             addRelatedInfo(
                                 error(signature.declaration, Diagnostics.This_overload_signature_is_not_compatible_with_its_implementation_signature),
-                                createDiagnosticForNode(bodyDeclaration, Diagnostics.The_implementation_signature_is_declared_here)
+                                createDiagnosticForNode(bodyDeclaration, Diagnostics.The_implementation_signature_is_declared_here),
+                                error(...compatibilityReport),
                             );
                             break;
                         }
