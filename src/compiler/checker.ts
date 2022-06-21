@@ -42397,7 +42397,14 @@ namespace ts {
                         : isLiteralTypeNode(parent) && isIndexedAccessTypeNode(grandParent)
                             ? getTypeFromTypeNode(grandParent.objectType)
                             : undefined;
-                    return objectType && getPropertyOfType(objectType, escapeLeadingUnderscores((node as StringLiteral | NumericLiteral).text));
+                    if (objectType) {
+                        return getPropertyOfType(objectType, escapeLeadingUnderscores((node as StringLiteral | NumericLiteral).text));
+                    }
+
+                    // if (/* provided to location that is a keyof type */) {
+                    //    return whatever keyof type's definition for type...?
+                    // }
+                    return undefined;
 
                 case SyntaxKind.DefaultKeyword:
                 case SyntaxKind.FunctionKeyword:
