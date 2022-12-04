@@ -107,6 +107,7 @@ import {
     GetCanonicalFileName,
     getCommonSourceDirectoryOfConfig,
     getDefaultLibFileName,
+    GetDiagnosticsOptions,
     getDirectoryPath,
     getEmitDeclarations,
     getEmitModuleKind,
@@ -608,15 +609,15 @@ export function changeCompilerHostLikeToUseCache(
     };
 }
 
-export function getPreEmitDiagnostics(program: Program, sourceFile?: SourceFile, cancellationToken?: CancellationToken): readonly Diagnostic[];
-/** @internal */ export function getPreEmitDiagnostics(program: BuilderProgram, sourceFile?: SourceFile, cancellationToken?: CancellationToken): readonly Diagnostic[]; // eslint-disable-line @typescript-eslint/unified-signatures
-export function getPreEmitDiagnostics(program: Program | BuilderProgram, sourceFile?: SourceFile, cancellationToken?: CancellationToken): readonly Diagnostic[] {
+export function getPreEmitDiagnostics(program: Program, sourceFile?: SourceFile, cancellationToken?: CancellationToken, options?: GetDiagnosticsOptions): readonly Diagnostic[];
+/** @internal */ export function getPreEmitDiagnostics(program: BuilderProgram, sourceFile?: SourceFile, cancellationToken?: CancellationToken, options?: GetDiagnosticsOptions): readonly Diagnostic[]; // eslint-disable-line @typescript-eslint/unified-signatures
+export function getPreEmitDiagnostics(program: Program | BuilderProgram, sourceFile?: SourceFile, cancellationToken?: CancellationToken, getDiagnosticsOptions?: GetDiagnosticsOptions): readonly Diagnostic[] {
     let diagnostics: Diagnostic[] | undefined;
     diagnostics = addRange(diagnostics, program.getConfigFileParsingDiagnostics());
     diagnostics = addRange(diagnostics, program.getOptionsDiagnostics(cancellationToken));
     diagnostics = addRange(diagnostics, program.getSyntacticDiagnostics(sourceFile, cancellationToken));
     diagnostics = addRange(diagnostics, program.getGlobalDiagnostics(cancellationToken));
-    diagnostics = addRange(diagnostics, program.getSemanticDiagnostics(sourceFile, cancellationToken));
+    diagnostics = addRange(diagnostics, program.getSemanticDiagnostics(sourceFile, cancellationToken, getDiagnosticsOptions));
 
     if (getEmitDeclarations(program.getCompilerOptions())) {
         diagnostics = addRange(diagnostics, program.getDeclarationDiagnostics(sourceFile, cancellationToken));
@@ -2539,16 +2540,17 @@ export function createProgram(rootNamesOrOptions: readonly string[] | CreateProg
 
     function getDiagnosticsHelper<T extends Diagnostic>(
         sourceFile: SourceFile | undefined,
-        getDiagnostics: (sourceFile: SourceFile, cancellationToken: CancellationToken | undefined) => readonly T[],
-        cancellationToken: CancellationToken | undefined): readonly T[] {
+        getDiagnostics: (sourceFile: SourceFile, cancellationToken: CancellationToken | undefined, getDiagnosticsOptions: GetDiagnosticsOptions | undefined) => readonly T[],
+        cancellationToken: CancellationToken | undefined,
+        options?: GetDiagnosticsOptions): readonly T[] {
         if (sourceFile) {
-            return getDiagnostics(sourceFile, cancellationToken);
+            return getDiagnostics(sourceFile, cancellationToken, options);
         }
         return sortAndDeduplicateDiagnostics(flatMap(program.getSourceFiles(), sourceFile => {
             if (cancellationToken) {
                 cancellationToken.throwIfCancellationRequested();
             }
-            return getDiagnostics(sourceFile, cancellationToken);
+            return getDiagnostics(sourceFile, cancellationToken, options);
         }));
     }
 
@@ -2556,8 +2558,8 @@ export function createProgram(rootNamesOrOptions: readonly string[] | CreateProg
         return getDiagnosticsHelper(sourceFile, getSyntacticDiagnosticsForFile, cancellationToken);
     }
 
-    function getSemanticDiagnostics(sourceFile?: SourceFile, cancellationToken?: CancellationToken): readonly Diagnostic[] {
-        return getDiagnosticsHelper(sourceFile, getSemanticDiagnosticsForFile, cancellationToken);
+    function getSemanticDiagnostics(sourceFile?: SourceFile, cancellationToken?: CancellationToken, options?: GetDiagnosticsOptions): readonly Diagnostic[] {
+        return getDiagnosticsHelper(sourceFile, getSemanticDiagnosticsForFile, cancellationToken, options);
     }
 
     function getCachedSemanticDiagnostics(sourceFile?: SourceFile): readonly Diagnostic[] | undefined {
@@ -2566,11 +2568,11 @@ export function createProgram(rootNamesOrOptions: readonly string[] | CreateProg
             : cachedBindAndCheckDiagnosticsForFile.allDiagnostics;
     }
 
-    function getBindAndCheckDiagnostics(sourceFile: SourceFile, cancellationToken?: CancellationToken): readonly Diagnostic[] {
-        return getBindAndCheckDiagnosticsForFile(sourceFile, cancellationToken);
+    function getBindAndCheckDiagnostics(sourceFile: SourceFile, cancellationToken?: CancellationToken, getDiagnosticsOptions?: GetDiagnosticsOptions): readonly Diagnostic[] {
+        return getBindAndCheckDiagnosticsForFile(sourceFile, cancellationToken, getDiagnosticsOptions);
     }
 
-    function getProgramDiagnostics(sourceFile: SourceFile): readonly Diagnostic[] {
+    function getProgramDiagnostics(sourceFile: SourceFile, getDiagnosticsOptions?: GetDiagnosticsOptions): readonly Diagnostic[] {
         if (skipTypeChecking(sourceFile, options, program)) {
             return emptyArray;
         }
@@ -2580,7 +2582,7 @@ export function createProgram(rootNamesOrOptions: readonly string[] | CreateProg
             return programDiagnosticsInFile;
         }
 
-        return getDiagnosticsWithPrecedingDirectives(sourceFile, sourceFile.commentDirectives, programDiagnosticsInFile).diagnostics;
+        return getDiagnosticsWithPrecedingDirectives(sourceFile, sourceFile.commentDirectives, programDiagnosticsInFile, getDiagnosticsOptions).diagnostics;
     }
 
     function getDeclarationDiagnostics(sourceFile?: SourceFile, cancellationToken?: CancellationToken): readonly DiagnosticWithLocation[] {
@@ -2621,18 +2623,18 @@ export function createProgram(rootNamesOrOptions: readonly string[] | CreateProg
         }
     }
 
-    function getSemanticDiagnosticsForFile(sourceFile: SourceFile, cancellationToken: CancellationToken | undefined): readonly Diagnostic[] {
+    function getSemanticDiagnosticsForFile(sourceFile: SourceFile, cancellationToken: CancellationToken | undefined, getDiagnosticsOptions: GetDiagnosticsOptions | undefined): readonly Diagnostic[] {
         return concatenate(
-            filterSemanticDiagnostics(getBindAndCheckDiagnosticsForFile(sourceFile, cancellationToken), options),
-            getProgramDiagnostics(sourceFile)
+            filterSemanticDiagnostics(getBindAndCheckDiagnosticsForFile(sourceFile, cancellationToken, getDiagnosticsOptions), options),
+            getProgramDiagnostics(sourceFile, getDiagnosticsOptions)
         );
     }
 
-    function getBindAndCheckDiagnosticsForFile(sourceFile: SourceFile, cancellationToken: CancellationToken | undefined): readonly Diagnostic[] {
-        return getAndCacheDiagnostics(sourceFile, cancellationToken, cachedBindAndCheckDiagnosticsForFile, getBindAndCheckDiagnosticsForFileNoCache);
+    function getBindAndCheckDiagnosticsForFile(sourceFile: SourceFile, cancellationToken: CancellationToken | undefined, getDiagnosticsOptions: GetDiagnosticsOptions | undefined): readonly Diagnostic[] {
+        return getAndCacheDiagnostics(sourceFile, cancellationToken, cachedBindAndCheckDiagnosticsForFile, getBindAndCheckDiagnosticsForFileNoCache, getDiagnosticsOptions);
     }
 
-    function getBindAndCheckDiagnosticsForFileNoCache(sourceFile: SourceFile, cancellationToken: CancellationToken | undefined): readonly Diagnostic[] {
+    function getBindAndCheckDiagnosticsForFileNoCache(sourceFile: SourceFile, cancellationToken: CancellationToken | undefined, getDiagnosticsOptions: GetDiagnosticsOptions | undefined): readonly Diagnostic[] {
         return runWithCancellationToken(() => {
             if (skipTypeChecking(sourceFile, options, program)) {
                 return emptyArray;
@@ -2660,17 +2662,17 @@ export function createProgram(rootNamesOrOptions: readonly string[] | CreateProg
                 checkDiagnostics = filter(checkDiagnostics, d => plainJSErrors.has(d.code));
             }
             // skip ts-expect-error errors in plain JS files, and skip JSDoc errors except in checked JS
-            return getMergedBindAndCheckDiagnostics(sourceFile, includeBindAndCheckDiagnostics && !isPlainJs, bindDiagnostics, checkDiagnostics, isCheckJs ? sourceFile.jsDocDiagnostics : undefined);
+            return getMergedBindAndCheckDiagnostics(sourceFile, includeBindAndCheckDiagnostics && !isPlainJs, getDiagnosticsOptions, bindDiagnostics, checkDiagnostics, isCheckJs ? sourceFile.jsDocDiagnostics : undefined);
         });
     }
 
-    function getMergedBindAndCheckDiagnostics(sourceFile: SourceFile, includeBindAndCheckDiagnostics: boolean, ...allDiagnostics: (readonly Diagnostic[] | undefined)[]) {
+    function getMergedBindAndCheckDiagnostics(sourceFile: SourceFile, includeBindAndCheckDiagnostics: boolean, getDiagnosticsOptions: GetDiagnosticsOptions | undefined, ...allDiagnostics: (readonly Diagnostic[] | undefined)[]) {
         const flatDiagnostics = flatten(allDiagnostics);
         if (!includeBindAndCheckDiagnostics || !sourceFile.commentDirectives?.length) {
             return flatDiagnostics;
         }
 
-        const { diagnostics, directives } = getDiagnosticsWithPrecedingDirectives(sourceFile, sourceFile.commentDirectives, flatDiagnostics);
+        const { diagnostics, directives } = getDiagnosticsWithPrecedingDirectives(sourceFile, sourceFile.commentDirectives, flatDiagnostics, getDiagnosticsOptions);
 
         for (const errorExpectation of directives.getUnusedExpectations()) {
             diagnostics.push(createDiagnosticForRange(sourceFile, errorExpectation.range, Diagnostics.Unused_ts_expect_error_directive));
@@ -2683,11 +2685,12 @@ export function createProgram(rootNamesOrOptions: readonly string[] | CreateProg
      * Creates a map of comment directives along with the diagnostics immediately preceded by one of them.
      * Comments that match to any of those diagnostics are marked as used.
      */
-    function getDiagnosticsWithPrecedingDirectives(sourceFile: SourceFile, commentDirectives: CommentDirective[], flatDiagnostics: Diagnostic[]) {
+    function getDiagnosticsWithPrecedingDirectives(sourceFile: SourceFile, commentDirectives: CommentDirective[], flatDiagnostics: Diagnostic[], getDiagnosticsOptions: GetDiagnosticsOptions | undefined) {
         // Diagnostics are only reported if there is no comment directive preceding them
         // This will modify the directives map by marking "used" ones with a corresponding diagnostic
         const directives = createCommentDirectivesMap(sourceFile, commentDirectives);
-        const diagnostics = flatDiagnostics.filter(diagnostic => markPrecedingCommentDirectiveLine(diagnostic, directives) === -1);
+
+        const diagnostics = flatDiagnostics.filter(diagnostic => markPrecedingCommentDirectiveLine(diagnostic, directives) === -1 && !getDiagnosticsOptions?.skipCommentDirectiveSuppressions);
 
         return { diagnostics, directives };
     }
@@ -2954,7 +2957,8 @@ export function createProgram(rootNamesOrOptions: readonly string[] | CreateProg
         sourceFile: T,
         cancellationToken: CancellationToken | undefined,
         cache: DiagnosticCache<U>,
-        getDiagnostics: (sourceFile: T, cancellationToken: CancellationToken | undefined) => readonly U[],
+        getDiagnostics: (sourceFile: T, cancellationToken: CancellationToken | undefined, getDiagnosticsOptions: GetDiagnosticsOptions | undefined) => readonly U[],
+        getDiagnosticsOptions?: GetDiagnosticsOptions
     ): readonly U[] {
 
         const cachedResult = sourceFile
@@ -2964,7 +2968,7 @@ export function createProgram(rootNamesOrOptions: readonly string[] | CreateProg
         if (cachedResult) {
             return cachedResult;
         }
-        const result = getDiagnostics(sourceFile, cancellationToken);
+        const result = getDiagnostics(sourceFile, cancellationToken, getDiagnosticsOptions);
         if (sourceFile) {
             (cache.perFile || (cache.perFile = new Map())).set(sourceFile.path, result);
         }

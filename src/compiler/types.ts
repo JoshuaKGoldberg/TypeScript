@@ -4414,6 +4414,11 @@ export const enum EmitOnly{
     Js,
     Dts,
 }
+
+export interface GetDiagnosticsOptions {
+    skipCommentDirectiveSuppressions?: boolean;
+}
+
 export interface Program extends ScriptReferenceHost {
     getCurrentDirectory(): string;
     /**
@@ -4456,13 +4461,13 @@ export interface Program extends ScriptReferenceHost {
     getGlobalDiagnostics(cancellationToken?: CancellationToken): readonly Diagnostic[];
     getSyntacticDiagnostics(sourceFile?: SourceFile, cancellationToken?: CancellationToken): readonly DiagnosticWithLocation[];
     /** The first time this is called, it will return global diagnostics (no location). */
-    getSemanticDiagnostics(sourceFile?: SourceFile, cancellationToken?: CancellationToken): readonly Diagnostic[];
+    getSemanticDiagnostics(sourceFile?: SourceFile, cancellationToken?: CancellationToken, options?: GetDiagnosticsOptions): readonly Diagnostic[];
     getDeclarationDiagnostics(sourceFile?: SourceFile, cancellationToken?: CancellationToken): readonly DiagnosticWithLocation[];
     getConfigFileParsingDiagnostics(): readonly Diagnostic[];
     /** @internal */ getSuggestionDiagnostics(sourceFile: SourceFile, cancellationToken?: CancellationToken): readonly DiagnosticWithLocation[];
 
     /** @internal */ getBindAndCheckDiagnostics(sourceFile: SourceFile, cancellationToken?: CancellationToken): readonly Diagnostic[];
-    /** @internal */ getProgramDiagnostics(sourceFile: SourceFile, cancellationToken?: CancellationToken): readonly Diagnostic[];
+    /** @internal */ getProgramDiagnostics(sourceFile: SourceFile, getDiagnosticsOptions?: GetDiagnosticsOptions): readonly Diagnostic[];
 
     /**
      * Gets a type checker that can be used to semantically analyze source files in the program.
