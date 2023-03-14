@@ -1,3 +1,5 @@
+// How on earth do you import this as a namespace, not a type?
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { TSESTree } = require("@typescript-eslint/utils");
 const { createRule } = require("./utils.cjs");
 
@@ -6,7 +8,6 @@ module.exports = createRule({
     meta: {
         docs: {
             description: ``,
-            recommended: "error",
         },
         messages: {
             leadingExcessStringError: `No trailing whitespace found on single-line object literal`,

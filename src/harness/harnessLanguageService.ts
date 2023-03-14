@@ -732,6 +732,7 @@ export class ShimLanguageServiceAdapter implements LanguageServiceAdapter {
 class SessionClientHost extends NativeLanguageServiceHost implements ts.server.SessionClientHost {
     private client!: ts.server.SessionClient;
 
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     constructor(cancellationToken: ts.HostCancellationToken | undefined, settings: ts.CompilerOptions | undefined) {
         super(cancellationToken, settings);
     }

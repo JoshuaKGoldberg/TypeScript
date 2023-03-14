@@ -63,7 +63,7 @@ describe("unittests:: tsserver:: symlinkCache", () => {
         openFilesForSession([appSrcIndexTs], session);
         const project = projectService.configuredProjects.get(appTsconfigJson.path)!;
         assert.deepEqual(
-            project.getSymlinkCache()?.getSymlinkedDirectories()?.get(link.path + "/" as ts.Path),
+            project.getSymlinkCache().getSymlinkedDirectories()?.get(link.path + "/" as ts.Path),
             { real: "/packages/dep/", realPath: "/packages/dep/" as ts.Path }
         );
     });

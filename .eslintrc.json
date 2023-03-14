@@ -10,6 +10,9 @@
         "node": true,
         "es6": true
     },
+    "extends": [
+        "plugin:@typescript-eslint/strict"
+    ],
     "plugins": [
         "@typescript-eslint", "no-null", "import", "eslint-plugin-local", "simple-import-sort"
     ],
@@ -28,13 +31,6 @@
         "simple-import-sort/imports": "error",
         "simple-import-sort/exports": "error",
 
-        "@typescript-eslint/adjacent-overload-signatures": "error",
-        "@typescript-eslint/array-type": "error",
-        "@typescript-eslint/no-array-constructor": "error",
-
-        "brace-style": "off",
-        "@typescript-eslint/brace-style": ["error", "stroustrup", { "allowSingleLine": true }],
-
         "@typescript-eslint/naming-convention": [
             "error",
             { "selector": "typeLike", "format": ["PascalCase"], "filter": { "regex": "^(__String|[A-Za-z]+_[A-Za-z]+)$", "match": false } },
@@ -47,46 +43,34 @@
             { "selector": "enumMember", "format": ["camelCase", "PascalCase"], "leadingUnderscore": "allow", "filter": { "regex": "^[A-Za-z]+_[A-Za-z]+$", "match": false } },
             { "selector": "property", "format": null }
         ],
+        "@typescript-eslint/no-unused-vars": ["error", {
+            "argsIgnorePattern": "^_",
+            "varsIgnorePattern": "^_"
+        }],
 
-        "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
-        "@typescript-eslint/consistent-type-assertions": ["error", { "assertionStyle": "as" }],
+        // Todo: Investigate enabling these rules from typescript-eslint
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-extraneous-class": "off",
 
+        // typescript-eslint's recommended rules that don't make sense for us
+        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "prefer-spread": "off",
+
+        // typescript-eslint's off-by-default, not-recommended formatting rules
+        "brace-style": "off",
+        "@typescript-eslint/brace-style": ["error", "stroustrup", { "allowSingleLine": true }],
         "max-statements-per-line": ["error", { "max": 1 }],
-
-        "no-duplicate-imports": "off",
-        "@typescript-eslint/no-duplicate-imports": "error",
-
-        "@typescript-eslint/no-inferrable-types": "error",
-        "@typescript-eslint/no-misused-new": "error",
-        "@typescript-eslint/no-this-alias": "error",
-
-        "no-unused-expressions": "off",
-        "@typescript-eslint/no-unused-expressions": ["error", { "allowTernary": true }],
-
-        "@typescript-eslint/prefer-for-of": "error",
-        "@typescript-eslint/prefer-function-type": "error",
-        "@typescript-eslint/prefer-namespace-keyword": "error",
-        "@typescript-eslint/prefer-as-const": "error",
-
         "quotes": "off",
         "@typescript-eslint/quotes": ["error", "double", { "avoidEscape": true, "allowTemplateLiterals": true }],
-
         "semi": "off",
         "@typescript-eslint/semi": "error",
-        "@typescript-eslint/no-extra-semi": "error",
-
         "space-before-function-paren": "off",
         "@typescript-eslint/space-before-function-paren": ["error", {
             "asyncArrow": "always",
             "anonymous": "always",
             "named": "never"
         }],
-
-        "@typescript-eslint/triple-slash-reference": "error",
-        "@typescript-eslint/type-annotation-spacing": "error",
-        "@typescript-eslint/unified-signatures": "error",
-
-        "@typescript-eslint/no-extra-non-null-assertion": "error",
 
         // scripts/eslint/rules
         "local/object-literal-surrounding-space": "error",
@@ -154,6 +138,43 @@
         "no-dupe-else-if": "error"
     },
     "overrides": [
+        {
+            "extends": [
+                "plugin:@typescript-eslint/strict-type-checked"
+            ],
+            "files": ["*.ts", "*.mts", "*.cts"],
+            "parserOptions": {
+                "project": true
+            },
+            "rules": {
+                // Todo: Investigate enabling these rules from typescript-eslint
+                "@typescript-eslint/no-explicit-any": "off",
+                "@typescript-eslint/no-non-null-assertion": "off",
+                "@typescript-eslint/no-unnecessary-condition": "off",
+                "@typescript-eslint/no-unsafe-argument": "off",
+                "@typescript-eslint/no-unsafe-assignment": "off",
+                "@typescript-eslint/no-unsafe-call": "off",
+                "@typescript-eslint/no-unsafe-member-access": "off",
+                "@typescript-eslint/no-unsafe-return": "off",
+                "@typescript-eslint/no-var-requires": "off",
+                "@typescript-eslint/unbound-method": "off",
+                "@typescript-eslint/no-base-to-string": "off",
+                "@typescript-eslint/restrict-plus-operands": "off",
+                "@typescript-eslint/restrict-template-expressions": "off",
+                
+                // typescript-eslint's recommended rules that don't make sense for us
+                "@typescript-eslint/ban-types": "off",
+                "@typescript-eslint/no-duplicate-enum-values": "off",
+                "@typescript-eslint/no-dynamic-delete": "off",
+                "@typescript-eslint/no-for-in-array": "off",
+                "@typescript-eslint/no-invalid-void-type": "off",
+                "@typescript-eslint/no-namespace": "off",
+                "@typescript-eslint/no-throw-literal": "off",
+                "@typescript-eslint/prefer-literal-enum-member": "off",
+                "prefer-rest-params": "off",
+                "prefer-spread": "off"
+            }
+        },
         // By default, the ESLint CLI only looks at .js files. But, it will also look at
         // any files which are referenced in an override config. Most users of typescript-eslint
         // get this behavior by default by extending a recommended typescript-eslint config, which 
@@ -184,6 +205,12 @@
             "rules": {
                 "simple-import-sort/imports": "off",
                 "simple-import-sort/exports": "off"
+            }
+        },
+        {
+            "files": ["**/corePublic.ts"],
+            "rules": {
+                "@typescript-eslint/no-inferrable-types": "error"
             }
         }
     ]

@@ -5,7 +5,6 @@
         "project": "./tsconfig-eslint.json"
     },
     "rules": {
-        "@typescript-eslint/no-unnecessary-type-assertion": "error",
         "no-restricted-globals": ["error",
             { "name": "setTimeout" },
             { "name": "clearTimeout" },
@@ -20,10 +19,6 @@
         {
             "files": ["lib/*.d.ts"],
             "rules": {
-                "@typescript-eslint/interface-name-prefix": "off",
-                "@typescript-eslint/prefer-function-type": "off",
-                "@typescript-eslint/unified-signatures": "off",
-
                 // scripts/eslint/rules
                 "local/no-keywords": "off",
 

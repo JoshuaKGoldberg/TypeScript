@@ -247,10 +247,6 @@ export class VerifyNegatable {
 }
 
 export class Verify extends VerifyNegatable {
-    constructor(state: FourSlash.TestState) {
-        super(state);
-    }
-
     public completions(...optionsArray: VerifyCompletionsOptions[]) {
         if (optionsArray.length === 1) {
             return this.state.verifyCompletions(optionsArray[0]);

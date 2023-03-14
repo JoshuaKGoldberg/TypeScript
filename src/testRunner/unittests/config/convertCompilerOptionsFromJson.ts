@@ -79,7 +79,7 @@ describe("unittests:: config:: convertCompilerOptionsFromJson", () => {
 
         function getDiagnosticString(diagnostic: ts.Diagnostic) {
             if (ignoreLocation) {
-                const { file, ...rest } = diagnostic;
+                const { file: _, ...rest } = diagnostic;
                 diagnostic = { file: undefined, ...rest };
             }
             return ts.formatDiagnostic(diagnostic, formatDiagnosticHost);

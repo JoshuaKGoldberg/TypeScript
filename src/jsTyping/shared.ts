@@ -46,7 +46,7 @@ export namespace Arguments {
 
 /** @internal */
 export function hasArgument(argumentName: string) {
-    return sys.args.indexOf(argumentName) >= 0;
+    return sys.args.includes(argumentName);
 }
 
 /** @internal */

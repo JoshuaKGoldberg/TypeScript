@@ -8,7 +8,7 @@ describe("unittests:: evaluation:: autoAccessors", () => {
     ];
     for (const { name, target } of editions) {
         describe(name, () => {
-            it("generates accessor pair", async () => {
+            it("generates accessor pair", () => {
                 const { C } = evaluator.evaluateTypeScript(`
                     export class C {
                         accessor x;
@@ -21,7 +21,7 @@ describe("unittests:: evaluation:: autoAccessors", () => {
                 assert.isFunction(desc!.set);
             });
 
-            it("storage is private", async () => {
+            it("storage is private", () => {
                 const { C } = evaluator.evaluateTypeScript(`
                     export class C {
                         accessor x;
@@ -33,7 +33,7 @@ describe("unittests:: evaluation:: autoAccessors", () => {
                 assert.throws(() => desc!.get!.call(obj), /private/);
             });
 
-            it("getter and setter wrap same field", async () => {
+            it("getter and setter wrap same field", () => {
                 const { C } = evaluator.evaluateTypeScript(`
                     export class C {
                         accessor x;
@@ -47,7 +47,7 @@ describe("unittests:: evaluation:: autoAccessors", () => {
                 assert.equal(obj.x, 2);
             });
 
-            it("supports initializer", async () => {
+            it("supports initializer", () => {
                 const { C } = evaluator.evaluateTypeScript(`
                     export class C {
                         accessor x = 1;
@@ -57,7 +57,7 @@ describe("unittests:: evaluation:: autoAccessors", () => {
                 assert.equal(obj.x, 1);
             });
 
-            it("legacy decorator can intercept getter/setter", async () => {
+            it("legacy decorator can intercept getter/setter", () => {
                 const { actions, C } = evaluator.evaluateTypeScript(`
                     function dec(target, key, descriptor) {
                         const { get, set } = descriptor;
@@ -91,7 +91,7 @@ describe("unittests:: evaluation:: autoAccessors", () => {
                 ]);
             });
 
-            it("legacy decorator cannot intercept initializer", async () => {
+            it("legacy decorator cannot intercept initializer", () => {
                 const { actions, C } = evaluator.evaluateTypeScript(`
                     function dec(target, key, descriptor) {
                         const { get, set } = descriptor;

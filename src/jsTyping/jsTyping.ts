@@ -166,17 +166,17 @@ export function discoverTypings(
     safeList: SafeList,
     packageNameToTypingLocation: ReadonlyMap<string, CachedTyping>,
     typeAcquisition: TypeAcquisition,
-    unresolvedImports: readonly string[],
+    unresolvedImports: readonly string[] | undefined,
     typesRegistry: ReadonlyMap<string, MapLike<string>>,
     compilerOptions: CompilerOptions):
     { cachedTypingPaths: string[], newTypingNames: string[], filesToWatch: string[] } {
 
-    if (!typeAcquisition || !typeAcquisition.enable) {
+    if (!typeAcquisition.enable) {
         return { cachedTypingPaths: [], newTypingNames: [], filesToWatch: [] };
     }
 
     // A typing name to typing file path mapping
-    const inferredTypings = new Map<string, string>();
+    const inferredTypings = new Map<string, string | undefined>();
 
     // Only infer typings for .js and .jsx files
     fileNames = mapDefined(fileNames, fileName => {
@@ -242,7 +242,7 @@ export function discoverTypings(
 
     function addInferredTyping(typingName: string) {
         if (!inferredTypings.has(typingName)) {
-            inferredTypings.set(typingName, undefined!); // TODO: GH#18217
+            inferredTypings.set(typingName, undefined);
         }
     }
     function addInferredTypings(typingNames: readonly string[], message: string) {
@@ -267,7 +267,7 @@ export function discoverTypings(
         let manifestTypingNames;
         if (host.fileExists(manifestPath)) {
             filesToWatch.push(manifestPath);
-            manifest = readConfigFile(manifestPath, path => host.readFile(path)).config;
+            manifest = readConfigFile(manifestPath, path => host.readFile(path)).config as MapLike<MapLike<string>>;
             manifestTypingNames = flatMap([manifest.dependencies, manifest.devDependencies, manifest.optionalDependencies, manifest.peerDependencies], getOwnKeys);
             addInferredTypings(manifestTypingNames, `Typing names in '${manifestPath}' dependencies`);
         }
@@ -325,7 +325,7 @@ export function discoverTypings(
         for (const manifestPath of dependencyManifestNames) {
             const normalizedFileName = normalizePath(manifestPath);
             const result = readConfigFile(normalizedFileName, (path: string) => host.readFile(path));
-            const manifest: PackageJson = result.config;
+            const manifest: PackageJson = result.config as PackageJson;
 
             // If the package has its own d.ts typings, those will take precedence. Otherwise the package name will be used
             // to download d.ts files from DefinitelyTyped

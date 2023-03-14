@@ -74,7 +74,7 @@ function setIsEqualTo(arr1: string[] | undefined, arr2: string[] | undefined): b
         if (isSet === undefined) {
             return false;
         }
-        if (isSet === true) {
+        if (isSet) {
             set.set(v, false);
             unique--;
         }

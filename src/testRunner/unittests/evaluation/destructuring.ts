@@ -12,7 +12,7 @@ describe("unittests:: evaluation:: destructuring", () => {
             `, { target: ts.ScriptTarget.ES5 });
             assert.deepEqual(result.output, [0, 1]);
         });
-        it("when element is defined", async () => {
+        it("when element is defined", () => {
             const result = evaluator.evaluateTypeScript(`
                 export const output: any[] = [];
                 const order = (n: any): any => output.push(n);

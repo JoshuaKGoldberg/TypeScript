@@ -1,7 +1,7 @@
 import * as evaluator from "../../_namespaces/evaluator";
 
 describe("unittests:: evaluation:: optionalCall", () => {
-    it("f?.()", async () => {
+    it("f?.()", () => {
         const result = evaluator.evaluateTypeScript(`
             function f(a) {
                 output.push(a);
@@ -13,7 +13,7 @@ describe("unittests:: evaluation:: optionalCall", () => {
         assert.strictEqual(result.output[0], 1);
         assert.isUndefined(result.output[1]);
     });
-    it("o.f?.()", async () => {
+    it("o.f?.()", () => {
         const result = evaluator.evaluateTypeScript(`
             export const o = {
                 f(a) {
@@ -27,7 +27,7 @@ describe("unittests:: evaluation:: optionalCall", () => {
         assert.strictEqual(result.output[0], 1);
         assert.strictEqual(result.output[1], result.o);
     });
-    it("o.x.f?.()", async () => {
+    it("o.x.f?.()", () => {
         const result = evaluator.evaluateTypeScript(`
             export const o = {
                 x: {
@@ -43,7 +43,7 @@ describe("unittests:: evaluation:: optionalCall", () => {
         assert.strictEqual(result.output[0], 1);
         assert.strictEqual(result.output[1], result.o.x);
     });
-    it("o?.f()", async () => {
+    it("o?.f()", () => {
         const result = evaluator.evaluateTypeScript(`
             export const o = {
                 f(a) {
@@ -57,7 +57,7 @@ describe("unittests:: evaluation:: optionalCall", () => {
         assert.strictEqual(result.output[0], 1);
         assert.strictEqual(result.output[1], result.o);
     });
-    it("o?.f?.()", async () => {
+    it("o?.f?.()", () => {
         const result = evaluator.evaluateTypeScript(`
             export const o = {
                 f(a) {
@@ -71,7 +71,7 @@ describe("unittests:: evaluation:: optionalCall", () => {
         assert.strictEqual(result.output[0], 1);
         assert.strictEqual(result.output[1], result.o);
     });
-    it("o.x?.f()", async () => {
+    it("o.x?.f()", () => {
         const result = evaluator.evaluateTypeScript(`
             export const o = {
                 x: {
@@ -87,7 +87,7 @@ describe("unittests:: evaluation:: optionalCall", () => {
         assert.strictEqual(result.output[0], 1);
         assert.strictEqual(result.output[1], result.o.x);
     });
-    it("o?.x.f()", async () => {
+    it("o?.x.f()", () => {
         const result = evaluator.evaluateTypeScript(`
             export const o = {
                 x: {
@@ -103,7 +103,7 @@ describe("unittests:: evaluation:: optionalCall", () => {
         assert.strictEqual(result.output[0], 1);
         assert.strictEqual(result.output[1], result.o.x);
     });
-    it("o?.x?.f()", async () => {
+    it("o?.x?.f()", () => {
         const result = evaluator.evaluateTypeScript(`
             export const o = {
                 x: {
@@ -119,7 +119,7 @@ describe("unittests:: evaluation:: optionalCall", () => {
         assert.strictEqual(result.output[0], 1);
         assert.strictEqual(result.output[1], result.o.x);
     });
-    it("o?.x?.f?.()", async () => {
+    it("o?.x?.f?.()", () => {
         const result = evaluator.evaluateTypeScript(`
             export const o = {
                 x: {
@@ -135,7 +135,7 @@ describe("unittests:: evaluation:: optionalCall", () => {
         assert.strictEqual(result.output[0], 1);
         assert.strictEqual(result.output[1], result.o.x);
     });
-    it("f?.()?.()", async () => {
+    it("f?.()?.()", () => {
         const result = evaluator.evaluateTypeScript(`
             function g(a) {
                 output.push(a);
@@ -152,7 +152,7 @@ describe("unittests:: evaluation:: optionalCall", () => {
         assert.strictEqual(result.output[1], 2);
         assert.isUndefined(result.output[2]);
     });
-    it("f?.().f?.()", async () => {
+    it("f?.().f?.()", () => {
         const result = evaluator.evaluateTypeScript(`
             export const o = {
                 f(a) {
@@ -171,7 +171,7 @@ describe("unittests:: evaluation:: optionalCall", () => {
         assert.strictEqual(result.output[1], 2);
         assert.strictEqual(result.output[2], result.o);
     });
-    it("f?.()?.f?.()", async () => {
+    it("f?.()?.f?.()", () => {
         const result = evaluator.evaluateTypeScript(`
             export const o = {
                 f(a) {
@@ -190,7 +190,7 @@ describe("unittests:: evaluation:: optionalCall", () => {
         assert.strictEqual(result.output[1], 2);
         assert.strictEqual(result.output[2], result.o);
     });
-    it("(o?.f)()", async () => {
+    it("(o?.f)()", () => {
         const result = evaluator.evaluateTypeScript(`
             export const foo = { bar() { return this } };
             export const output = (foo?.bar)();

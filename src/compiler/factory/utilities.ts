@@ -160,7 +160,6 @@ import {
     ReadonlyKeyword,
     RelationalOperator,
     RelationalOperatorOrHigher,
-    SetAccessorDeclaration,
     setOriginalNode,
     setParent,
     setStartsOnNewLine,

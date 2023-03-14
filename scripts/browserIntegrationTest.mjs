@@ -4,7 +4,7 @@ import { join } from "path";
 
 let playwright;
 try {
-    // @ts-ignore-error
+    // @ts-expect-error
     playwright = await import("playwright");
 }
 catch (error) {
@@ -30,7 +30,6 @@ for (const browserType of browsers) {
         process.exitCode = 1;
     };
 
-    // @ts-ignore-error
     page.on("error", errorCaught);
     page.on("pageerror", errorCaught);
 

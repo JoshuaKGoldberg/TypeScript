@@ -317,7 +317,8 @@ interface PackageJson extends PackageJsonPathFields {
     version?: string;
 }
 
-function readPackageJsonField<TMatch, K extends MatchingKeys<PackageJson, string | undefined>>(jsonContent: PackageJson, fieldName: K, typeOfTag: "string", state: ModuleResolutionState): PackageJson[K] | undefined;
+function readPackageJsonField<K extends MatchingKeys<PackageJson, string | undefined>>(jsonContent: PackageJson, fieldName: K, typeOfTag: "string", state: ModuleResolutionState): PackageJson[K] | undefined;
+// eslint-disable-next-line @typescript-eslint/unified-signatures
 function readPackageJsonField<K extends MatchingKeys<PackageJson, object | undefined>>(jsonContent: PackageJson, fieldName: K, typeOfTag: "object", state: ModuleResolutionState): PackageJson[K] | undefined;
 function readPackageJsonField<K extends keyof PackageJson>(jsonContent: PackageJson, fieldName: K, typeOfTag: "string" | "object", state: ModuleResolutionState): PackageJson[K] | undefined {
     if (!hasProperty(jsonContent, fieldName)) {
@@ -1741,7 +1742,7 @@ function nodeModuleNameResolverWorker(features: NodeResolutionFeatures, moduleNa
         && features & NodeResolutionFeatures.Exports
         && !isExternalModuleNameRelative(moduleName)
         && !extensionIsOk(Extensions.TypeScript | Extensions.Declaration, result.value.resolved.extension)
-        && conditions.indexOf("import") > -1
+        && conditions.includes("import")
     ) {
         traceIfEnabled(state, Diagnostics.Resolution_of_non_relative_name_failed_trying_with_modern_Node_resolution_features_disabled_to_see_if_npm_library_needs_configuration_update);
         const diagnosticState = {
@@ -1936,7 +1937,7 @@ function loadModuleFromFile(extensions: Extensions, candidate: string, onlyRecor
 
 function loadModuleFromFileNoImplicitExtensions(extensions: Extensions, candidate: string, onlyRecordFailures: boolean, state: ModuleResolutionState): PathAndExtension | undefined {
     const filename = getBaseFileName(candidate);
-    if (filename.indexOf(".") === -1) {
+    if (!filename.includes(".")) {
         return undefined; // extensionless import, no lookups performed, since we don't support extensionless files
     }
     let extensionless = removeFileExtension(candidate);
@@ -2145,9 +2146,9 @@ function loadEntrypointsFromExportMap(
     return entrypoints;
 
     function loadEntrypointsFromTargetExports(target: unknown): boolean | undefined {
-        if (typeof target === "string" && startsWith(target, "./") && target.indexOf("*") === -1) {
+        if (typeof target === "string" && startsWith(target, "./") && !target.includes("*")) {
             const partsAfterFirst = getPathComponents(target).slice(2);
-            if (partsAfterFirst.indexOf("..") >= 0 || partsAfterFirst.indexOf(".") >= 0 || partsAfterFirst.indexOf("node_modules") >= 0) {
+            if (partsAfterFirst.includes("..") || partsAfterFirst.includes(".") || partsAfterFirst.includes("node_modules")) {
                 return false;
             }
             const resolvedTarget = combinePaths(scope.packageDirectory, target);
@@ -2504,11 +2505,11 @@ export function comparePatternKeys(a: string, b: string) {
 function loadModuleFromImportsOrExports(extensions: Extensions, state: ModuleResolutionState, cache: ModuleResolutionCache | undefined, redirectedReference: ResolvedProjectReference | undefined, moduleName: string, lookupTable: object, scope: PackageJsonInfo, isImports: boolean): SearchResult<Resolved> | undefined {
     const loadModuleFromTargetImportOrExport = getLoadModuleFromTargetImportOrExport(extensions, state, cache, redirectedReference, moduleName, scope, isImports);
 
-    if (!endsWith(moduleName, directorySeparator) && moduleName.indexOf("*") === -1 && hasProperty(lookupTable, moduleName)) {
+    if (!endsWith(moduleName, directorySeparator) && !moduleName.includes("*") && hasProperty(lookupTable, moduleName)) {
         const target = (lookupTable as { [idx: string]: unknown })[moduleName];
         return loadModuleFromTargetImportOrExport(target, /*subpath*/ "", /*pattern*/ false, moduleName);
     }
-    const expandingKeys = sort(filter(getOwnKeys(lookupTable as MapLike<unknown>), k => k.indexOf("*") !== -1 || endsWith(k, "/")), comparePatternKeys);
+    const expandingKeys = sort(filter(getOwnKeys(lookupTable as MapLike<unknown>), k => k.includes("*") || endsWith(k, "/")), comparePatternKeys);
     for (const potentialTarget of expandingKeys) {
         if (state.features & NodeResolutionFeatures.ExportsPatternTrailers && matchesPatternWithTrailer(potentialTarget, moduleName)) {
             const target = (lookupTable as { [idx: string]: unknown })[potentialTarget];
@@ -2570,7 +2571,7 @@ function getLoadModuleFromTargetImportOrExport(extensions: Extensions, state: Mo
             }
             const parts = pathIsRelative(target) ? getPathComponents(target).slice(1) : getPathComponents(target);
             const partsAfterFirst = parts.slice(1);
-            if (partsAfterFirst.indexOf("..") >= 0 || partsAfterFirst.indexOf(".") >= 0 || partsAfterFirst.indexOf("node_modules") >= 0) {
+            if (partsAfterFirst.includes("..") || partsAfterFirst.includes(".") || partsAfterFirst.includes("node_modules")) {
                 if (state.traceEnabled) {
                     trace(state.host, Diagnostics.package_json_scope_0_has_invalid_type_for_target_of_specifier_1, scope.packageDirectory, moduleName);
                 }
@@ -2580,7 +2581,7 @@ function getLoadModuleFromTargetImportOrExport(extensions: Extensions, state: Mo
             // TODO: Assert that `resolvedTarget` is actually within the package directory? That's what the spec says.... but I'm not sure we need
             // to be in the business of validating everyone's import and export map correctness.
             const subpathParts = getPathComponents(subpath);
-            if (subpathParts.indexOf("..") >= 0 || subpathParts.indexOf(".") >= 0 || subpathParts.indexOf("node_modules") >= 0) {
+            if (subpathParts.includes("..") || subpathParts.includes(".") || subpathParts.includes("node_modules")) {
                 if (state.traceEnabled) {
                     trace(state.host, Diagnostics.package_json_scope_0_has_invalid_type_for_target_of_specifier_1, scope.packageDirectory, moduleName);
                 }
@@ -2603,7 +2604,7 @@ function getLoadModuleFromTargetImportOrExport(extensions: Extensions, state: Mo
             if (!Array.isArray(target)) {
                 traceIfEnabled(state, Diagnostics.Entering_conditional_exports);
                 for (const condition of getOwnKeys(target as MapLike<unknown>)) {
-                    if (condition === "default" || state.conditions.indexOf(condition) >= 0 || isApplicableVersionedTypesKey(state.conditions, condition)) {
+                    if (condition === "default" || state.conditions.includes(condition) || isApplicableVersionedTypesKey(state.conditions, condition)) {
                         traceIfEnabled(state, Diagnostics.Matched_0_condition_1, isImports ? "imports" : "exports", condition);
                         const subTarget = (target as MapLike<unknown>)[condition];
                         const result = loadModuleFromTargetImportOrExport(subTarget, subpath, pattern, key);
@@ -2674,7 +2675,7 @@ function getLoadModuleFromTargetImportOrExport(extensions: Extensions, state: Mo
             // We are going to probe _so many_ possible paths. We limit where we'll do this to try to reduce the possibilities of false positive lookups.
             if (!state.isConfigLookup
                 && (state.compilerOptions.declarationDir || state.compilerOptions.outDir)
-                && finalPath.indexOf("/node_modules/") === -1
+                && !finalPath.includes("/node_modules/")
                 && (state.compilerOptions.configFile ? containsPath(scope.packageDirectory, toAbsolutePath(state.compilerOptions.configFile.fileName), !useCaseSensitiveFileNames()) : true)
             ) {
                 // So that all means we'll only try these guesses for files outside `node_modules` in a directory where the `package.json` and `tsconfig.json` are siblings.
@@ -2778,7 +2779,7 @@ function getLoadModuleFromTargetImportOrExport(extensions: Extensions, state: Mo
 
 /** @internal */
 export function isApplicableVersionedTypesKey(conditions: readonly string[], key: string) {
-    if (conditions.indexOf("types") === -1) return false; // only apply versioned types conditions if the types condition is applied
+    if (!conditions.includes("types")) return false; // only apply versioned types conditions if the types condition is applied
     if (!startsWith(key, "types@")) return false;
     const range = VersionRange.tryParse(key.substring("types@".length));
     if (!range) return false;

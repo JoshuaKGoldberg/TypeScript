@@ -1041,10 +1041,6 @@ class SourceFileObject extends NodeObject implements SourceFile {
     public localJsxFactory: EntityName | undefined;
     public localJsxNamespace: __String | undefined;
 
-    constructor(kind: SyntaxKind, pos: number, end: number) {
-        super(kind, pos, end);
-    }
-
     public update(newText: string, textChangeRange: TextChangeRange): SourceFile {
         return updateSourceFile(this, newText, textChangeRange);
     }

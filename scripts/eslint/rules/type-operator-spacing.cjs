@@ -1,3 +1,5 @@
+// How on earth do you import this as a namespace, not a type?
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { TSESTree, AST_TOKEN_TYPES } = require("@typescript-eslint/utils");
 const { createRule } = require("./utils.cjs");
 
@@ -6,7 +8,6 @@ module.exports = createRule({
     meta: {
         docs: {
             description: ``,
-            recommended: "error",
         },
         messages: {
             typeOperatorSpacingError: `The '|' and '&' operators must be surrounded by spaces`,

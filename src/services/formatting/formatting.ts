@@ -1279,7 +1279,7 @@ function formatSpanWorker(
      * Trimming will be done for lines after the previous range.
      * Exclude comments as they had been previously processed.
      */
-    function trimTrailingWhitespacesForRemainingRange(trivias: TextRangeWithKind<SyntaxKind>[]) {
+    function trimTrailingWhitespacesForRemainingRange(trivias: TextRangeWithKind[]) {
         let startPos = previousRange ? previousRange.end : originalRange.pos;
         for (const trivia of trivias) {
             if (isComment(trivia.kind)) {

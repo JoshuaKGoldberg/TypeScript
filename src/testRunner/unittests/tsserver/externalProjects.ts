@@ -540,7 +540,7 @@ describe("unittests:: tsserver:: ExternalProjects", () => {
 
             projectService.openExternalProjects([externalProject]);
 
-            let knownProjects = projectService.synchronizeProjectList([]);
+            const knownProjects = projectService.synchronizeProjectList([]);
             checkNumberOfProjects(projectService, { configuredProjects: 1, externalProjects: 0, inferredProjects: 0 });
 
             const configProject = configuredProjectAt(projectService, 0);
@@ -550,7 +550,7 @@ describe("unittests:: tsserver:: ExternalProjects", () => {
 
             host.deleteFile(configFile.path);
 
-            knownProjects = projectService.synchronizeProjectList(ts.map(knownProjects, proj => proj.info!)); // TODO: GH#18217 GH#20039
+            projectService.synchronizeProjectList(ts.map(knownProjects, proj => proj.info!)); // TODO: GH#18217 GH#20039
             checkNumberOfProjects(projectService, { configuredProjects: 0, externalProjects: 0, inferredProjects: 0 });
 
             externalProject.rootFiles.length = 1;

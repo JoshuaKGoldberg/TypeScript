@@ -1,3 +1,5 @@
+// How on earth do you import this as a namespace, not a type?
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { AST_NODE_TYPES, TSESTree } = require("@typescript-eslint/utils");
 const { createRule } = require("./utils.cjs");
 
@@ -6,7 +8,6 @@ module.exports = createRule({
     meta: {
         docs: {
             description: `Disallows traditional (non-arrow) function expressions.`,
-            recommended: "error",
         },
         messages: {
             onlyArrowFunctionsError: "non-arrow functions are forbidden",

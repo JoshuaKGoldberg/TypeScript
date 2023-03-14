@@ -32,7 +32,7 @@ describe("unittests:: compilerCore", () => {
     });
     describe("customSet", () => {
         it("mutation", () => {
-            const set = ts.createSet<number, number>(x => x % 2, (x, y) => (x % 4) === (y % 4));
+            const set = ts.createSet<number>(x => x % 2, (x, y) => (x % 4) === (y % 4));
             assert.equal(set.size, 0);
 
             const newSet = set.add(0);
@@ -72,7 +72,7 @@ describe("unittests:: compilerCore", () => {
             assert.equal(set.size, 0);
         });
         it("resizing", () => {
-            const set = ts.createSet<number, number>(x => x % 2, (x, y) => x === y);
+            const set = ts.createSet<number>(x => x % 2, (x, y) => x === y);
             const elementCount = 100;
 
             for (let i = 0; i < elementCount; i++) {
@@ -90,7 +90,7 @@ describe("unittests:: compilerCore", () => {
             }
         });
         it("clear", () => {
-            const set = ts.createSet<number, number>(x => x % 2, (x, y) => (x % 4) === (y % 4));
+            const set = ts.createSet<number>(x => x % 2, (x, y) => (x % 4) === (y % 4));
             for (let j = 0; j < 2; j++) {
                 for (let i = 0; i < 100; i++) {
                     set.add(i);
@@ -103,7 +103,7 @@ describe("unittests:: compilerCore", () => {
             }
         });
         it("forEach", () => {
-            const set = ts.createSet<number, number>(x => x % 2, (x, y) => (x % 4) === (y % 4));
+            const set = ts.createSet<number>(x => x % 2, (x, y) => (x % 4) === (y % 4));
             for (let i = 0; i < 100; i++) {
                 set.add(i);
             }
@@ -126,7 +126,7 @@ describe("unittests:: compilerCore", () => {
             assert.deepEqual(keys, expected);
         });
         it("iteration", () => {
-            const set = ts.createSet<number, number>(x => x % 2, (x, y) => (x % 4) === (y % 4));
+            const set = ts.createSet<number>(x => x % 2, (x, y) => (x % 4) === (y % 4));
             for (let i = 0; i < 4; i++) {
                 set.add(i);
             }

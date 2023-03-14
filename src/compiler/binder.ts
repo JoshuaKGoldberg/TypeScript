@@ -3294,6 +3294,7 @@ function createBinder(): (file: SourceFile, options: CompilerOptions) => void {
             return;
         }
         const rootExpr = getLeftmostAccessExpression(node.left);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
         if (isIdentifier(rootExpr) && lookupSymbolForName(container, rootExpr.escapedText)?.flags! & SymbolFlags.Alias) {
             return;
         }
@@ -3327,7 +3328,7 @@ function createBinder(): (file: SourceFile, options: CompilerOptions) => void {
     }
 
     function bindPotentiallyMissingNamespaces(namespaceSymbol: Symbol | undefined, entityName: BindableStaticNameExpression, isToplevel: boolean, isPrototypeProperty: boolean, containerIsClass: boolean) {
-        if (namespaceSymbol?.flags! & SymbolFlags.Alias) {
+        if (namespaceSymbol && namespaceSymbol.flags & SymbolFlags.Alias) {
             return namespaceSymbol;
         }
         if (isToplevel && !isPrototypeProperty) {

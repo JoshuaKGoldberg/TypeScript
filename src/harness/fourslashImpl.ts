@@ -262,7 +262,7 @@ export class TestState {
                     const baseDirectory = ts.normalizePath(ts.getDirectoryPath(file.fileName));
                     const tsConfig = ts.convertCompilerOptionsFromJson(configJson.config.compilerOptions, baseDirectory, file.fileName);
 
-                    if (!tsConfig.errors || !tsConfig.errors.length) {
+                    if (!tsConfig.errors.length) {
                         compilationOptions = ts.extend(tsConfig.options, compilationOptions);
                     }
                 }
@@ -336,9 +336,7 @@ export class TestState {
                 compilationOptions.lib?.forEach(fileName => {
                     const libFile = Harness.Compiler.getDefaultLibrarySourceFile(fileName);
                     ts.Debug.assertIsDefined(libFile, `Could not find lib file '${fileName}'`);
-                    if (libFile) {
-                        this.languageServiceAdapterHost.addScript(fileName, libFile.text, /*isRootFile*/ false);
-                    }
+                    this.languageServiceAdapterHost.addScript(fileName, libFile.text, /*isRootFile*/ false);
                 });
             }
         }
@@ -401,7 +399,7 @@ export class TestState {
             const keys = ts.getAllKeys(ls);
             for (const k of keys) {
                 const key = k as keyof typeof ls;
-                if (cacheableMembers.indexOf(key) === -1) {
+                if (!cacheableMembers.includes(key)) {
                     proxy[key] = (...args: any[]) => (ls[key] as Function)(...args);
                     continue;
                 }
@@ -624,7 +622,7 @@ export class TestState {
         return "global";
     }
 
-    private formatLineAndCharacterOfPosition(file: ts.SourceFile, pos: number) {
+    private formatLineAndCharacterOfPosition(file: ts.SourceFile | undefined, pos: number) {
         if (file) {
             const { line, character } = ts.getLineAndCharacterOfPosition(file, pos);
             return `${line}:${character}`;
@@ -632,7 +630,7 @@ export class TestState {
         return "global";
     }
 
-    private formatPosition(file: ts.SourceFile, pos: number) {
+    private formatPosition(file: ts.SourceFile | undefined, pos: number) {
         if (file) {
             return file.fileName + "@" + pos;
         }
@@ -651,7 +649,7 @@ export class TestState {
                 this.printErrorLog(/*expectErrors*/ false, errors);
                 const error = errors[0];
                 const message = typeof error.messageText === "string" ? error.messageText : error.messageText.messageText;
-                this.raiseError(`Found an error: ${this.formatPosition(error.file!, error.start!)}: ${message}`);
+                this.raiseError(`Found an error: ${this.formatPosition(error.file, error.start!)}: ${message}`);
             }
         });
     }
@@ -689,7 +687,8 @@ export class TestState {
             throw new Error("Expected exactly one output from emit of " + this.activeFile.fileName);
         }
 
-        const evaluation = new Function(`${emit.outputFiles[0].text};\r\nreturn (${expr});`)(); // eslint-disable-line no-new-func
+        // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
+        const evaluation = new Function(`${emit.outputFiles[0].text};\r\nreturn (${expr});`)();
         if (evaluation !== value) {
             this.raiseError(`Expected evaluation of expression "${expr}" to equal "${value}", but got "${evaluation}"`);
         }
@@ -766,7 +765,7 @@ export class TestState {
         let testName: string;
 
         if (!defs || ts.isArray(defs)) {
-            definitions = defs as ts.DefinitionInfo[] || [];
+            definitions = defs || [];
             testName = "goToDefinitions";
         }
         else {
@@ -2366,7 +2365,7 @@ export class TestState {
                         }
                     });
                 }
-                else if (prevChar === " " && /A-Za-z_/.test(ch)) {
+                else if (prevChar === " " && ch.includes("A-Za-z_")) {
                     /* Completions */
                     this.languageService.getCompletionsAtPosition(this.activeFile.fileName, offset, ts.emptyOptions);
                 }
@@ -3657,7 +3656,7 @@ export class TestState {
         const documentHighlights = this.getDocumentHighlightsAtCurrentPosition(fileNames) || [];
 
         for (const dh of documentHighlights) {
-            if (fileNames.indexOf(dh.fileName) === -1) {
+            if (!fileNames.includes(dh.fileName)) {
                 this.raiseError(`verifyDocumentHighlights failed - got highlights in unexpected file name ${dh.fileName}`);
             }
         }
@@ -4132,7 +4131,7 @@ export class TestState {
     private tryFindFileWorker(name: string): { readonly file: FourSlashFile | undefined; readonly availableNames: readonly string[]; } {
         name = ts.normalizePath(name);
         // names are stored in the compiler with this relative path, this allows people to use goTo.file on just the fileName
-        name = name.indexOf("/") === -1 ? (this.basePath + "/" + name) : name;
+        name = !name.includes("/") ? (this.basePath + "/" + name) : name;
 
         const availableNames: string[] = [];
         const file = ts.forEach(this.testData.files, file => {
@@ -4726,7 +4725,7 @@ function parseFileContent(content: string, fileName: string, markerMap: Map<stri
                         openMarker = undefined;
                         state = State.none;
                     }
-                    else if (validMarkerChars.indexOf(currentChar) < 0) {
+                    else if (!validMarkerChars.includes(currentChar)) {
                         if (currentChar === "*" && i < content.length - 1 && content.charAt(i + 1) === "/") {
                             // The marker is about to be closed, ignore the 'invalid' char
                         }

@@ -1372,17 +1372,9 @@ export class File {
     }
 }
 
-export class SameFileContentFile extends File {
-    constructor(data: Buffer | string, metaAndEncoding?: { encoding?: string, meta?: Record<string, any> }) {
-        super(data, metaAndEncoding);
-    }
-}
+export class SameFileContentFile extends File { }
 
-export class SameFileWithModifiedTime extends File {
-    constructor(data: Buffer | string, metaAndEncoding?: { encoding?: string, meta?: Record<string, any> }) {
-        super(data, metaAndEncoding);
-    }
-}
+export class SameFileWithModifiedTime extends File { }
 
 /** Extended options for a hard link in a `FileSet` */
 export class Link {

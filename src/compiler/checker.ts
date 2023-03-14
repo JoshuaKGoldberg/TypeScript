@@ -5044,7 +5044,7 @@ export function createTypeChecker(host: TypeCheckerHost): TypeChecker {
                     /*details*/ undefined,
                     Diagnostics.There_are_types_at_0_but_this_result_could_not_be_resolved_when_respecting_package_json_exports_The_1_library_may_need_to_update_its_package_json_or_typings,
                     node10Result,
-                    node10Result.indexOf(nodeModulesPathPart + "@types/") > -1 ? `@types/${mangleScopedPackageName(packageId.name)}` : packageId.name)
+                    node10Result.includes(nodeModulesPathPart + "@types/") ? `@types/${mangleScopedPackageName(packageId.name)}` : packageId.name)
                 : typesPackageExists(packageId.name)
                     ? chainDiagnosticMessages(
                         /*details*/ undefined,
@@ -7162,7 +7162,7 @@ export function createTypeChecker(host: TypeCheckerHost): TypeChecker {
 
             function preserveCommentsOn<T extends Node>(node: T) {
                 if (some(propertySymbol.declarations, d => d.kind === SyntaxKind.JSDocPropertyTag)) {
-                    const d = propertySymbol.declarations?.find(d => d.kind === SyntaxKind.JSDocPropertyTag)! as JSDocPropertyTag;
+                    const d = propertySymbol.declarations!.find(d => d.kind === SyntaxKind.JSDocPropertyTag)! as JSDocPropertyTag;
                     const commentText = getTextOfJSDocComment(d.comment);
                     if (commentText) {
                         setSyntheticLeadingComments(node, [{ kind: SyntaxKind.MultiLineCommentTrivia, text: "*\n * " + commentText.replace(/\n/g, "\n * ") + "\n ", pos: -1, end: -1, hasTrailingNewLine: true }]);
@@ -7761,14 +7761,14 @@ export function createTypeChecker(host: TypeCheckerHost): TypeChecker {
                 if (!specifier) {
                     specifier = getSpecifierForModuleSymbol(chain[0], context);
                 }
-                if (!(context.flags & NodeBuilderFlags.AllowNodeModulesRelativePaths) && getEmitModuleResolutionKind(compilerOptions) !== ModuleResolutionKind.Classic && specifier.indexOf("/node_modules/") >= 0) {
+                if (!(context.flags & NodeBuilderFlags.AllowNodeModulesRelativePaths) && getEmitModuleResolutionKind(compilerOptions) !== ModuleResolutionKind.Classic && specifier.includes("/node_modules/")) {
                     const oldSpecifier = specifier;
                     if (getEmitModuleResolutionKind(compilerOptions) === ModuleResolutionKind.Node16 || getEmitModuleResolutionKind(compilerOptions) === ModuleResolutionKind.NodeNext) {
                         // We might be able to write a portable import type using a mode override; try specifier generation again, but with a different mode set
                         const swappedMode = contextFile?.impliedNodeFormat === ModuleKind.ESNext ? ModuleKind.CommonJS : ModuleKind.ESNext;
                         specifier = getSpecifierForModuleSymbol(chain[0], context, swappedMode);
 
-                        if (specifier.indexOf("/node_modules/") >= 0) {
+                        if (specifier.includes("/node_modules/")) {
                             // Still unreachable :(
                             specifier = oldSpecifier;
                         }
@@ -8485,7 +8485,7 @@ export function createTypeChecker(host: TypeCheckerHost): TypeChecker {
                             if (group.length > 1) {
                                 // remove group members from statements and then merge group members and add back to statements
                                 statements = [
-                                    ...filter(statements, s => group.indexOf(s as ExportDeclaration) === -1),
+                                    ...filter(statements, s => !group.includes(s as ExportDeclaration)),
                                     factory.createExportDeclaration(
                                         /*modifiers*/ undefined,
                                         /*isTypeOnly*/ false,
@@ -11609,7 +11609,7 @@ export function createTypeChecker(host: TypeCheckerHost): TypeChecker {
     function getOuterTypeParametersOfClassOrInterface(symbol: Symbol): TypeParameter[] | undefined {
         const declaration = (symbol.flags & SymbolFlags.Class || symbol.flags & SymbolFlags.Function)
             ? symbol.valueDeclaration
-            : symbol.declarations?.find(decl => {
+            : symbol.declarations!.find(decl => {
                 if (decl.kind === SyntaxKind.InterfaceDeclaration) {
                     return true;
                 }
@@ -11618,7 +11618,7 @@ export function createTypeChecker(host: TypeCheckerHost): TypeChecker {
                 }
                 const initializer = (decl as VariableDeclaration).initializer;
                 return !!initializer && (initializer.kind === SyntaxKind.FunctionExpression || initializer.kind === SyntaxKind.ArrowFunction);
-            })!;
+            });
         Debug.assert(!!declaration, "Class was missing valueDeclaration -OR- non-class had no interface declarations");
         return getOuterTypeParameters(declaration);
     }
@@ -17744,7 +17744,7 @@ export function createTypeChecker(host: TypeCheckerHost): TypeChecker {
                 if (freshMapper) {
                     const freshCombinedMapper = combineTypeMappers(mapper, freshMapper);
                     for (const p of freshParams) {
-                        if (root.inferTypeParameters.indexOf(p) === -1) {
+                        if (!root.inferTypeParameters.includes(p)) {
                             p.mapper = freshCombinedMapper;
                         }
                     }
@@ -23623,7 +23623,7 @@ export function createTypeChecker(host: TypeCheckerHost): TypeChecker {
                 if (isIdentifier(param.name)) {
                     const originalKeywordKind = identifierToKeywordKind(param.name);
                     if ((isCallSignatureDeclaration(param.parent) || isMethodSignature(param.parent) || isFunctionTypeNode(param.parent)) &&
-                        param.parent.parameters.indexOf(param) > -1 &&
+                        param.parent.parameters.includes(param) &&
                         (resolveName(param, param.name.escapedText, SymbolFlags.Type, undefined, param.name.escapedText, /*isUse*/ true) ||
                         originalKeywordKind && isTypeNodeKind(originalKeywordKind))) {
                         const newName = "arg" + param.parent.parameters.indexOf(param);
@@ -43594,7 +43594,7 @@ export function createTypeChecker(host: TypeCheckerHost): TypeChecker {
                     // so for now we will just not allow them in scripts, which is the only place they can merge cross-file.
                     error(node.name, Diagnostics.Namespaces_are_not_allowed_in_global_script_files_when_0_is_enabled_If_this_file_is_not_intended_to_be_a_global_script_set_moduleDetection_to_force_or_add_an_empty_export_statement, isolatedModulesLikeFlagName);
                 }
-                if (symbol.declarations?.length! > 1) {
+                if (symbol.declarations!.length > 1) {
                     const firstNonAmbientClassOrFunc = getFirstNonAmbientClassOrFunctionDeclaration(symbol);
                     if (firstNonAmbientClassOrFunc) {
                         if (getSourceFileOfNode(node) !== getSourceFileOfNode(firstNonAmbientClassOrFunc)) {
@@ -47621,7 +47621,7 @@ export function createTypeChecker(host: TypeCheckerHost): TypeChecker {
         }
 
         function checkGrammarJsxNestedIdentifier(name: MemberName | ThisExpression) {
-            if (isIdentifier(name) && idText(name).indexOf(":") !== -1) {
+            if (isIdentifier(name) && idText(name).includes(":")) {
                 return grammarErrorOnNode(name, Diagnostics.JSX_property_access_expressions_cannot_include_JSX_namespace_names);
             }
         }
@@ -48366,7 +48366,7 @@ export function createTypeChecker(host: TypeCheckerHost): TypeChecker {
     function checkNumericLiteralValueSize(node: NumericLiteral) {
         // We should test against `getTextOfNode(node)` rather than `node.text`, because `node.text` for large numeric literals can contain "."
         // e.g. `node.text` for numeric literal `1100000000000000000000` is `1.1e21`.
-        const isFractional = getTextOfNode(node).indexOf(".") !== -1;
+        const isFractional = getTextOfNode(node).includes(".");
         const isScientific = node.numericLiteralFlags & TokenFlags.Scientific;
 
         // Scientific notation (e.g. 2e54 and 1e00000000010) can't be converted to bigint

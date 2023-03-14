@@ -526,7 +526,7 @@ function isPropertyAccessNamespaceReference(node: Node): boolean {
     let root = node;
     let isLastClause = true;
     if (root.parent.kind === SyntaxKind.PropertyAccessExpression) {
-        while (root.parent && root.parent.kind === SyntaxKind.PropertyAccessExpression) {
+        while (root.parent.kind === SyntaxKind.PropertyAccessExpression) {
             root = root.parent;
         }
 

@@ -241,6 +241,8 @@ export interface ProgramHost<T extends BuilderProgram> {
  *
  * @internal
  */
+// https://github.com/typescript-eslint/typescript-eslint/issues/6188
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ProgramHost<T extends BuilderProgram> {
     // TODO: GH#18217 Optional methods are frequently asserted
     createDirectory?(path: string): void;

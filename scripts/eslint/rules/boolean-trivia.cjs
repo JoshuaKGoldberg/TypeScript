@@ -1,3 +1,5 @@
+// How on earth do you import this as a namespace, not a type?
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { AST_NODE_TYPES, TSESTree } = require("@typescript-eslint/utils");
 const { createRule } = require("./utils.cjs");
 
@@ -6,7 +8,6 @@ module.exports = createRule({
     meta: {
         docs: {
             description: ``,
-            recommended: "error",
         },
         messages: {
             booleanTriviaArgumentError: `Tag argument with parameter name`,
@@ -48,7 +49,7 @@ module.exports = createRule({
                     return true;
                 }
 
-                return ["apply", "call", "equal", "fail", "isTrue", "output", "stringify", "push"].indexOf(methodName) >= 0;
+                return ["apply", "call", "equal", "fail", "isTrue", "output", "stringify", "push"].includes(methodName);
             }
 
             if (node.callee && node.callee.type === AST_NODE_TYPES.Identifier) {
@@ -65,7 +66,7 @@ module.exports = createRule({
                     "createProperty",
                     "resolveName",
                     "contains",
-                ].indexOf(functionName) >= 0;
+                ].includes(functionName);
             }
 
             return false;
@@ -85,7 +86,7 @@ module.exports = createRule({
 
             const argRangeStart = node.range[0];
             const commentRangeEnd = comments[0].range[1];
-            const hasNewLine = sourceCodeText.slice(commentRangeEnd, argRangeStart).indexOf("\n") >= 0;
+            const hasNewLine = sourceCodeText.slice(commentRangeEnd, argRangeStart).includes("\n");
 
             if (argRangeStart !== commentRangeEnd + 1 && !hasNewLine) {
                 context.report({ messageId: "booleanTriviaArgumentSpaceError", node });

@@ -516,7 +516,7 @@ export function getPathFromPathComponents(pathComponents: readonly string[]) {
  * @internal
  */
 export function normalizeSlashes(path: string): string {
-    return path.indexOf("\\") !== -1
+    return path.includes("\\")
         ? path.replace(backslashRegExp, directorySeparator)
         : path;
 }

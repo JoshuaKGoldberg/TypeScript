@@ -6041,7 +6041,7 @@ export function getExternalModuleNameFromDeclaration(host: ResolveModuleNameReso
     // If the declaration already uses a non-relative name, and is outside the common source directory, continue to use it
     const specifier = getExternalModuleName(declaration);
     if (specifier && isStringLiteralLike(specifier) && !pathIsRelative(specifier.text) &&
-        getCanonicalAbsolutePath(host, file.path).indexOf(getCanonicalAbsolutePath(host, ensureTrailingDirectorySeparator(host.getCommonSourceDirectory()))) === -1) {
+        !getCanonicalAbsolutePath(host, file.path).includes(getCanonicalAbsolutePath(host, ensureTrailingDirectorySeparator(host.getCommonSourceDirectory())))) {
         return undefined;
     }
     return getResolvedExternalModuleName(host, file);
@@ -9089,7 +9089,7 @@ export function getSupportedExtensions(options?: CompilerOptions, extraFileExten
     const flatBuiltins = flatten(builtins);
     const extensions = [
         ...builtins,
-        ...mapDefined(extraFileExtensions, x => x.scriptKind === ScriptKind.Deferred || needJsExtensions && isJSLike(x.scriptKind) && flatBuiltins.indexOf(x.extension as Extension) === -1 ? [x.extension] : undefined)
+        ...mapDefined(extraFileExtensions, x => x.scriptKind === ScriptKind.Deferred || needJsExtensions && isJSLike(x.scriptKind) && !flatBuiltins.includes(x.extension as Extension) ? [x.extension] : undefined)
     ];
 
     return extensions;
@@ -9271,7 +9271,7 @@ export function tryParsePattern(pattern: string): string | Pattern | undefined {
     if (indexOfStar === -1) {
         return pattern;
     }
-    return pattern.indexOf("*", indexOfStar + 1) !== -1
+    return pattern.includes("*", indexOfStar + 1)
         ? undefined
         : {
             prefix: pattern.substr(0, indexOfStar),

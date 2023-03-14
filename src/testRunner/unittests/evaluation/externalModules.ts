@@ -2,7 +2,7 @@ import * as evaluator from "../../_namespaces/evaluator";
 
 describe("unittests:: evaluation:: externalModules", () => {
     // https://github.com/microsoft/TypeScript/issues/35420
-    it("Correct 'this' in function exported from external module", async () => {
+    it("Correct 'this' in function exported from external module", () => {
         const result = evaluator.evaluateTypeScript({
             files: {
                 "/.src/output.ts": `
@@ -43,7 +43,7 @@ describe("unittests:: evaluation:: externalModules", () => {
         assert.equal(result.output[3], true); // `other.f(other)`. `this` is still namespace because it is left of `.`.
     });
 
-    it("Correct 'this' in function expression exported from external module", async () => {
+    it("Correct 'this' in function expression exported from external module", () => {
         const result = evaluator.evaluateTypeScript({
             files: {
                 "/.src/output.ts": `

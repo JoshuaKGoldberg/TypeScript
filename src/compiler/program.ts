@@ -2759,7 +2759,7 @@ export function createProgram(rootNamesOrOptions: readonly string[] | CreateProg
             const isJs = sourceFile.scriptKind === ScriptKind.JS || sourceFile.scriptKind === ScriptKind.JSX;
             const isCheckJs = isJs && isCheckJsEnabledForFile(sourceFile, options);
             const isPlainJs = isPlainJsFile(sourceFile, options.checkJs);
-            const isTsNoCheck = !!sourceFile.checkJsDirective && sourceFile.checkJsDirective.enabled === false;
+            const isTsNoCheck = !!sourceFile.checkJsDirective && !sourceFile.checkJsDirective.enabled;
 
             // By default, only type-check .ts, .tsx, Deferred, plain JS, checked JS and External
             // - plain JS: .js files with no // ts-check and checkJs: undefined

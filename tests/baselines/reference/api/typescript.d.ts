@@ -2232,7 +2232,7 @@ declare namespace ts {
     interface WriteFileCallbackData {
     }
     type WriteFileCallback = (fileName: string, text: string, writeByteOrderMark: boolean, onError?: (message: string) => void, sourceFiles?: readonly SourceFile[], data?: WriteFileCallbackData) => void;
-    class OperationCanceledException {
+    class OperationCanceledException extends Error {
     }
     interface CancellationToken {
         isCancellationRequested(): boolean;

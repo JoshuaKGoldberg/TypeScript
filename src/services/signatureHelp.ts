@@ -724,6 +724,7 @@ function itemInfoForParameters(candidateSignature: Signature, checker: TypeCheck
     const isVariadic: (parameterList: readonly Symbol[]) => boolean =
         !checker.hasEffectiveRestParameter(candidateSignature) ? _ => false
         : lists.length === 1 ? _ => true
+        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
         : pList => !!(pList.length && tryCast(pList[pList.length - 1], isTransientSymbol)?.links.checkFlags! & CheckFlags.RestParameter);
     return lists.map(parameterList => ({
         isVariadic: isVariadic(parameterList),

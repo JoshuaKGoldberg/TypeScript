@@ -4581,7 +4581,7 @@ export type WriteFileCallback = (
     data?: WriteFileCallbackData,
 ) => void;
 
-export class OperationCanceledException { }
+export class OperationCanceledException extends Error { }
 
 export interface CancellationToken {
     isCancellationRequested(): boolean;

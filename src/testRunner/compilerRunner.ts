@@ -92,7 +92,7 @@ export class CompilerBaselineRunner extends RunnerBase {
         before(() => {
             let payload;
             if (test && test.content) {
-                const rootDir = test.file.indexOf("conformance") === -1 ? "tests/cases/compiler/" : ts.getDirectoryPath(test.file) + "/";
+                const rootDir = !test.file.includes("conformance") ? "tests/cases/compiler/" : ts.getDirectoryPath(test.file) + "/";
                 payload = TestCaseParser.makeUnitsFromTest(test.content, test.file, rootDir);
             }
             compilerTest = new CompilerTest(fileName, payload, configuration);
@@ -200,7 +200,7 @@ class CompilerTest {
             }
         }
 
-        const rootDir = fileName.indexOf("conformance") === -1 ? "tests/cases/compiler/" : ts.getDirectoryPath(fileName) + "/";
+        const rootDir = !fileName.includes("conformance") ? "tests/cases/compiler/" : ts.getDirectoryPath(fileName) + "/";
 
         if (testCaseContent === undefined) {
             testCaseContent = TestCaseParser.makeUnitsFromTest(IO.readFile(fileName)!, fileName, rootDir);
@@ -236,7 +236,7 @@ class CompilerTest {
         this.toBeCompiled = [];
         this.otherFiles = [];
 
-        if (testCaseContent.settings.noImplicitReferences || /require\(/.test(this.lastUnit.content) || /reference\spath/.test(this.lastUnit.content)) {
+        if (testCaseContent.settings.noImplicitReferences || this.lastUnit.content.includes("require(") || /reference\spath/.test(this.lastUnit.content)) {
             this.toBeCompiled.push(this.createHarnessTestFile(this.lastUnit, rootDir));
             units.forEach(unit => {
                 if (unit.name !== this.lastUnit.name) {
@@ -325,7 +325,7 @@ class CompilerTest {
     }
 
     public verifyTypesAndSymbols() {
-        if (this.fileName.indexOf("APISample") >= 0) {
+        if (this.fileName.includes("APISample")) {
             return;
         }
 
