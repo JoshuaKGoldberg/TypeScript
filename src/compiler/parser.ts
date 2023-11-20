@@ -3942,7 +3942,7 @@ namespace Parser {
                 //      <T extends "">
                 //
                 // We do *not* want to consume the `>` as we're consuming the expression for "".
-                expression = parseUnaryExpressionOrHigher();
+                expression = parseUnaryExpressionOrHigher(/*previousNode*/ undefined);
             }
         }
 
@@ -5077,7 +5077,7 @@ namespace Parser {
         // and consumes anything.
         const pos = getNodePos();
         const hasJSDoc = hasPrecedingJSDocComment();
-        const expr = parseBinaryExpressionOrHigher(OperatorPrecedence.Lowest);
+        const expr = parseBinaryExpressionOrHigher(OperatorPrecedence.Lowest, /*previousNode*/ undefined);
 
         // To avoid a look-ahead, we did not handle the case of an arrow function with a single un-parenthesized
         // parameter ('x => ...') above. We handle it here by checking if the parsed expression was a single
@@ -5366,7 +5366,7 @@ namespace Parser {
                 const pos = getNodePos();
                 const hasJSDoc = hasPrecedingJSDocComment();
                 const asyncModifier = parseModifiersForArrowFunction();
-                const expr = parseBinaryExpressionOrHigher(OperatorPrecedence.Lowest);
+                const expr = parseBinaryExpressionOrHigher(OperatorPrecedence.Lowest, /*previousNode*/ undefined);
                 return parseSimpleArrowFunctionExpression(pos, expr as Identifier, allowReturnTypeInArrowFunction, hasJSDoc, asyncModifier);
             }
         }
@@ -5385,7 +5385,7 @@ namespace Parser {
                 return Tristate.False;
             }
             // Check for un-parenthesized AsyncArrowFunction
-            const expr = parseBinaryExpressionOrHigher(OperatorPrecedence.Lowest);
+            const expr = parseBinaryExpressionOrHigher(OperatorPrecedence.Lowest, /*previousNode*/ undefined);
             if (!scanner.hasPrecedingLineBreak() && expr.kind === SyntaxKind.Identifier && token() === SyntaxKind.EqualsGreaterThanToken) {
                 return Tristate.True;
             }
@@ -5559,7 +5559,7 @@ namespace Parser {
         );
     }
 
-    function parseBinaryExpressionOrHigher(precedence: OperatorPrecedence, previousNode?: Node): Expression {
+    function parseBinaryExpressionOrHigher(precedence: OperatorPrecedence, previousNode: Node | undefined): Expression {
         const pos = getNodePos();
         const leftOperand = parseUnaryExpressionOrHigher(previousNode);
         return parseBinaryExpressionRest(precedence, leftOperand, pos);
@@ -5699,7 +5699,7 @@ namespace Parser {
      *      1) UnaryExpression[?Yield]
      *      2) UpdateExpression[?Yield] ** ExponentiationExpression[?Yield]
      */
-    function parseUnaryExpressionOrHigher(previousNode?: Node): UnaryExpression | BinaryExpression {
+    function parseUnaryExpressionOrHigher(previousNode: Node | undefined): UnaryExpression | BinaryExpression {
         /**
          * ES7 UpdateExpression:
          *      1) LeftHandSideExpression[?Yield]
@@ -5786,7 +5786,7 @@ namespace Parser {
                 }
                 // falls through
             default:
-                return parseUpdateExpression();
+                return parseUpdateExpression(/*previousNode*/ undefined);
         }
     }
 
@@ -5836,7 +5836,7 @@ namespace Parser {
      *      5) --LeftHandSideExpression[?yield]
      * In TypeScript (2), (3) are parsed as PostfixUnaryExpression. (4), (5) are parsed as PrefixUnaryExpression
      */
-    function parseUpdateExpression(previousNode?: Node): UpdateExpression {
+    function parseUpdateExpression(previousNode: Node | undefined): UpdateExpression {
         if (token() === SyntaxKind.PlusPlusToken || token() === SyntaxKind.MinusMinusToken) {
             const pos = getNodePos();
             return finishNode(factory.createPrefixUnaryExpression(token() as PrefixUnaryOperator, nextTokenAnd(parseLeftHandSideExpressionOrHigher)), pos);
@@ -5923,7 +5923,7 @@ namespace Parser {
         return parseCallExpressionRest(pos, expression);
     }
 
-    function parseMemberExpressionOrHigher(previousNode?: Node): MemberExpression {
+    function parseMemberExpressionOrHigher(previousNode: Node | undefined): MemberExpression {
         // Note: to make our lives simpler, we decompose the NewExpression productions and
         // place ObjectCreationExpression and FunctionExpression into PrimaryExpression.
         // like so:
@@ -6571,7 +6571,7 @@ namespace Parser {
         return scanner.hasPrecedingLineBreak() || isBinaryOperator() || !isStartOfExpression();
     }
 
-    function parsePrimaryExpression(previousNode?: Node): PrimaryExpression {
+    function parsePrimaryExpression(previousNode: Node | undefined): PrimaryExpression {
         switch (token()) {
             case SyntaxKind.NoSubstitutionTemplateLiteral:
                 if (scanner.getTokenFlags() & TokenFlags.IsInvalid) {
@@ -6791,7 +6791,7 @@ namespace Parser {
             return finishNode(factory.createMetaProperty(SyntaxKind.NewKeyword, name), pos);
         }
         const expressionPos = getNodePos();
-        let expression: LeftHandSideExpression = parseMemberExpressionRest(expressionPos, parsePrimaryExpression(), /*allowOptionalChain*/ false);
+        let expression: LeftHandSideExpression = parseMemberExpressionRest(expressionPos, parsePrimaryExpression(/*previousNode*/ undefined), /*allowOptionalChain*/ false);
         let typeArguments: NodeArray<TypeNode> | undefined;
         // Absorb type arguments into NewExpression when preceding expression is ExpressionWithTypeArguments
         if (expression.kind === SyntaxKind.ExpressionWithTypeArguments) {
@@ -7935,7 +7935,7 @@ namespace Parser {
             const memberExpression = parseMemberExpressionRest(pos, awaitExpression, /*allowOptionalChain*/ true);
             return parseCallExpressionRest(pos, memberExpression);
         }
-        return parseLeftHandSideExpressionOrHigher();
+        return parseLeftHandSideExpressionOrHigher(/*previousNode*/ undefined);
     }
 
     function tryParseDecorator(): Decorator | undefined {
@@ -8184,7 +8184,7 @@ namespace Parser {
 
     function parseExpressionWithTypeArguments(): ExpressionWithTypeArguments {
         const pos = getNodePos();
-        const expression = parseLeftHandSideExpressionOrHigher();
+        const expression = parseLeftHandSideExpressionOrHigher(/*previousNode*/ undefined);
         if (expression.kind === SyntaxKind.ExpressionWithTypeArguments) {
             return expression as ExpressionWithTypeArguments;
         }
