@@ -628,6 +628,7 @@ export interface ProjectServiceOptions {
     globalPlugins?: readonly string[];
     pluginProbeLocations?: readonly string[];
     allowLocalPluginLoads?: boolean;
+    skipCleanup?: boolean;
     typesMapLocation?: string;
     serverMode?: LanguageServiceMode;
     session: Session<unknown> | undefined;
@@ -1292,6 +1293,7 @@ export class ProjectService {
     public readonly typingsInstaller: ITypingsInstaller;
     private readonly globalCacheLocationDirectoryPath: Path | undefined;
     public readonly throttleWaitMilliseconds?: number;
+    private readonly skipCleanup: boolean | undefined;
     /** @internal */
     readonly eventHandler?: ProjectServiceEventHandler;
     private readonly suppressDiagnosticEvents?: boolean;
@@ -1343,6 +1345,7 @@ export class ProjectService {
         this.typingsInstaller = opts.typingsInstaller || nullTypingsInstaller;
         this.throttleWaitMilliseconds = opts.throttleWaitMilliseconds;
         this.eventHandler = opts.eventHandler;
+        this.skipCleanup = opts.skipCleanup;
         this.suppressDiagnosticEvents = opts.suppressDiagnosticEvents;
         this.globalPlugins = opts.globalPlugins || emptyArray;
         this.pluginProbeLocations = opts.pluginProbeLocations || emptyArray;
@@ -4410,6 +4413,12 @@ export class ProjectService {
         openFilesWithRetainedConfiguredProject: Set<Path> | undefined,
         externalProjectsRetainingConfiguredProjects: Set<string> | undefined,
     ) {
+        // "Single-run" runs such as command-line linting don't need to prune,
+        // as everything will be discarded quickly anyway.
+        if (this.skipCleanup) {
+            return;
+        }
+
         // This was postponed from closeOpenFile to after opening next file,
         // so that we can reuse the project if we need to right away
         // Remove all the non marked projects
