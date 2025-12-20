@@ -21837,8 +21837,8 @@ export function createTypeChecker(host: TypeCheckerHost): TypeChecker {
         return checkTypeRelatedTo(source, target, comparableRelation, errorNode, headMessage, containingMessageChain);
     }
 
-    function isSignatureAssignableTo(source: Signature, target: Signature, ignoreReturnTypes: boolean): boolean {
-        return compareSignaturesRelated(source, target, ignoreReturnTypes ? SignatureCheckMode.IgnoreReturnTypes : SignatureCheckMode.None, /*reportErrors*/ false, /*errorReporter*/ undefined, /*incompatibleErrorReporter*/ undefined, compareTypesAssignable, /*reportUnreliableMarkers*/ undefined) !== Ternary.False;
+    function isSignatureAssignableTo(source: Signature, target: Signature): boolean {
+        return compareSignaturesRelated(source, target, SignatureCheckMode.IgnoreReturnTypes, /*reportErrors*/ false, /*errorReporter*/ undefined, /*incompatibleErrorReporter*/ undefined, compareTypesAssignable, /*reportUnreliableMarkers*/ undefined) !== Ternary.False;
     }
 
     type ErrorReporter = (message: DiagnosticMessage, ...args: DiagnosticArguments) => void;
@@ -22041,7 +22041,7 @@ export function createTypeChecker(host: TypeCheckerHost): TypeChecker {
             || isTypeRelatedTo(targetReturnType, sourceReturnType, assignableRelation)
             || isTypeRelatedTo(sourceReturnType, targetReturnType, assignableRelation)
         ) {
-            return isSignatureAssignableTo(erasedSource, erasedTarget, /*ignoreReturnTypes*/ true);
+            return isSignatureAssignableTo(erasedSource, erasedTarget);
         }
 
         return false;
